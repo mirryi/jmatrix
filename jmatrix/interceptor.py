@@ -16,7 +16,23 @@
 
 """Functions to determine if a request should be blocked or not."""
 
+import itertools
+
+
 from jmatrix import rule
+
+def _first_true(iterable, default=False, pred=None):
+    """Returns the first true value in the iterable.
+
+    If no true value is found, returns *default*
+
+    If *pred* is not None, returns the first item
+    for which pred(item) is true.
+
+    """
+    # first_true([a,b,c], x) --> a or b or c or x
+    # first_true([a,b], x, f) --> a if f(a) else b if f(b) else x
+    return next(filter(pred, iterable), default)
 
 
 def _hostname_widen_list(hostname: str):
@@ -28,6 +44,7 @@ def _hostname_widen_list(hostname: str):
 	while hostname:
 		l.append(hostname)
 		hostname = hostname.partition(".")[-1]
+	l.append('*')
 	return l
 
 
@@ -38,7 +55,39 @@ def should_block(
 	widened_request = _hostname_widen_list(request_hostname)
 	# First check if we have a matrix-off rule
 	context_scheme += "-scheme"
-	if (rules.matrix_off_rules.get(context_scheme, False) or
-		rules.matrix_off_rules.get(context_hostname, False)):
+	if (any(map(
+			lambda host: rules.matrix_off_rules.get(host, False),
+			itertools.chain(widened_context, [context_scheme])))):
 		# We should be off for this context
 		return False
+
+	# Begin checking actual matrix rules. Precedence looks like:
+	# contextHostname -> destHostname -> type
+	#
+	# HOWEVER: Blacklists take precedence, ie: * * frame block won't allow for any whitelisting on any non-cell rule.
+
+	# Block if no action
+	action = True
+	for w_c in widened_context:
+		context_rules = rules.matrix_rules.get(w_c)
+		if not context_rules:
+			continue
+		# TODO FIXME handle first-party
+		for h_c in widened_request:
+			hostname_rules = context_rules.get(h_c)
+			if not hostname_rules:
+				continue
+			# types don't have any cascading, just check our type and *
+			for t_c in [request_type, rule.Type.ALL]:
+				final_rule = hostname_rules.get(t_c)
+				if not final_rule:
+					continue
+				# If we get block/accept, we're done. If we get inherit, we have to continue.
+				if final_rule == rule.Action.BLOCK:
+					return True
+				elif final_rule == rule.Action.ALLOW:
+					# TODO how can we handle blocking non exact
+					return False
+
+	# No rules, block
+	return action

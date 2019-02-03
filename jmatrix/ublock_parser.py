@@ -22,8 +22,8 @@ class JMatrixParserError(ValueError):
 
 def _rule_converter(r: str, rules: rule.Rules):
 	split_rules = r.split()
-	if 4 < len(split_rules) < 2:
-		raise JMatrixParserError("Incorrect number of rules to {}.".format(r))
+	if not (2 <= len(split_rules) <= 4):
+		raise JMatrixParserError("Incorrect number of rules to: {}.".format(r))
 	if len(split_rules) < 3:
 		split_rules.append('*')
 	if len(split_rules) < 4:
