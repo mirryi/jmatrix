@@ -1,4 +1,4 @@
 
 * jmatrix - j's matrix
 
-jmatrix is a WIP uMatrix clone for qutebrowser.
+jmatrix is a WIP [[https://github.com/gorhill/uMatrix][uMatrix]] implementation for qutebrowser.
