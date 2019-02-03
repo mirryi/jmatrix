@@ -86,8 +86,12 @@ def should_block(
 				if final_rule == rule.Action.BLOCK:
 					return True
 				elif final_rule == rule.Action.ALLOW:
-					# TODO how can we handle blocking non exact
-					return False
+					action = False
+					# We want to allow this request, but if there's a more general rule on a higher precedence,
+					#
+					# However, '* * type' seems to override all non-exact rules (?!?) instead of following normal
+					# precedence.
+					break
 
 	# No rules, block
 	return action

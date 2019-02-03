@@ -79,7 +79,25 @@ OVERALL_TESTS = {
 	],
 	 "block": [
 		 ("github.com", "http", "qutebrowser.org", rule.Type.CSS),
-		 ("quterbowser.org", "http", "githubassets.com", rule.Type.CSS),
+		 ("qutebrowser.org", "http", "githubassets.com", rule.Type.CSS),
+		 # TODO how should we block this
+		 ("github.com", "http", "githubassets.com", rule.Type.FRAME),
+		 ("github.com", "http", "super.githubassets.com", rule.Type.FRAME),
+		 ("super.github.com", "http", "super.githubassets.com", rule.Type.FRAME),
+		 ],},
+
+	("com * frame block",
+	 "github.com githubassets.com * allow",):
+	{"allow": [
+		("github.com", "http", "githubassets.com", rule.Type.CSS),
+		("github.com", "http", "super.githubassets.com", rule.Type.CSS),
+		("super.github.com", "http", "super.githubassets.com", rule.Type.CSS),
+		("super.github.com", "http", "githubassets.com", rule.Type.CSS),
+
+	],
+	 "block": [
+		 ("github.com", "http", "qutebrowser.org", rule.Type.CSS),
+		 ("qutebrowser.org", "http", "githubassets.com", rule.Type.CSS),
 		 # TODO how should we block this
 		 ("github.com", "http", "githubassets.com", rule.Type.FRAME),
 		 ("github.com", "http", "super.githubassets.com", rule.Type.FRAME),
@@ -98,7 +116,7 @@ OVERALL_TESTS = {
 	 "block": [
 		 ("github.com", "http", "githubassets.org", rule.Type.CSS),
 		 ("super.github.com", "http", "super.githubassets.org", rule.Type.CSS),
-		 ("quterbowser.org", "http", "githubassets.com", rule.Type.CSS),
+		 ("qutebrowser.org", "http", "githubassets.com", rule.Type.CSS),
 		 # TODO how should we block this
 		 ("github.com", "http", "githubassets.com", rule.Type.XHR),
 		 ("super.github.com", "http", "githubassets.com", rule.Type.XHR),
