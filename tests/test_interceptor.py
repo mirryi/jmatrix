@@ -49,24 +49,61 @@ OVERALL_TESTS = {
 	{"allow": [
 		("gitlab.com", "http", "gitlab.com", rule.Type.CSS),],
 	 "block": [
-		 ("gitlab.com", "http", "gitlab.com", rule.Type.XHR),],
-	 },
+		 ("gitlab.com", "http", "gitlab.com", rule.Type.XHR),],},
 
 	("* * * block",
 	 "* * css allow",):
 	{"allow": [
 		("gitlab.com", "http", "gitlab.com", rule.Type.CSS),],
 	 "block": [
-		 ("gitlab.com", "http", "gitlab.com", rule.Type.XHR),],
-	 },
+		 ("gitlab.com", "http", "gitlab.com", rule.Type.XHR),],},
 
 	("* qutebrowser.bad * block",
 	 "qutebrowser.org qutebrowser.bad * allow",):
 	{"allow": [
-		("qutebrowser.org", "http", "qutebrowser.bad", rule.Type.CSS),],
+		("qutebrowser.org", "http", "qutebrowser.bad", rule.Type.CSS),
+		("sub.qutebrowser.org", "http", "qutebrowser.bad", rule.Type.CSS),
+		("www.sub.qutebrowser.org", "http", "www.qutebrowser.bad", rule.Type.CSS),],
 	 "block": [
-		 ("non-qutebrowser.org", "http", "qutebrowser.bad", rule.Type.CSS),],
-	 },
+		 ("non-qutebrowser.org", "http", "qutebrowser.bad", rule.Type.CSS),
+		 ("non-qutebrowser.org", "http", "www.qutebrowser.bad", rule.Type.CSS),],},
+
+	("* * frame block",
+	 "github.com githubassets.com * allow",):
+	{"allow": [
+		("github.com", "http", "githubassets.com", rule.Type.CSS),
+		("github.com", "http", "super.githubassets.com", rule.Type.CSS),
+		("super.github.com", "http", "super.githubassets.com", rule.Type.CSS),
+		("super.github.com", "http", "githubassets.com", rule.Type.CSS),
+
+	],
+	 "block": [
+		 ("github.com", "http", "qutebrowser.org", rule.Type.CSS),
+		 ("quterbowser.org", "http", "githubassets.com", rule.Type.CSS),
+		 # TODO how should we block this
+		 ("github.com", "http", "githubassets.com", rule.Type.FRAME),
+		 ("github.com", "http", "super.githubassets.com", rule.Type.FRAME),
+		 ("super.github.com", "http", "super.githubassets.com", rule.Type.FRAME),
+		 ],},
+
+	("* * xhr allow",
+	 "github.com githubassets.com * block",):
+	{"allow": [
+		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),
+		("github.com", "http", "github.com", rule.Type.XHR),
+		("super.github.com", "http", "github.com", rule.Type.XHR),
+		("github.com", "http", "super.github.com", rule.Type.XHR),
+		("super.github.com", "http", "super.github.com", rule.Type.XHR),
+		("quetbrowser.org", "http", "qutebrowser.org", rule.Type.XHR),],
+	 "block": [
+		 ("github.com", "http", "githubassets.org", rule.Type.CSS),
+		 ("super.github.com", "http", "super.githubassets.org", rule.Type.CSS),
+		 ("quterbowser.org", "http", "githubassets.com", rule.Type.CSS),
+		 # TODO how should we block this
+		 ("github.com", "http", "githubassets.com", rule.Type.XHR),
+		 ("super.github.com", "http", "githubassets.com", rule.Type.XHR),
+		 ("github.com", "http", "super.githubassets.com", rule.Type.XHR),
+		 ("super.github.com", "http", "super.githubassets.com", rule.Type.XHR),],},
 }
 
 
