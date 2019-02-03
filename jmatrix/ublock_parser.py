@@ -28,22 +28,22 @@ def _rule_converter(r: str, rules: rule.Rules):
 		split_rules.append('*')
 	if len(split_rules) < 4:
 		split_rules.append('allow')
-	source_hostname, dest_hostname, request_type, action = split_rules
+	source_hostname, dest_hostname, rq_type, action = split_rules
 	action_mapping = rule.Action.__members__
 	action = action.upper()
 	if action in action_mapping:
-		action = action_mapping[action]
+		action_value = action_mapping[action]
 	else:
 		raise JMatrixParserError("Incorrect action values to {}.".format(r))
-	request_type = request_type.upper()
-	if request_type == '*':
-		request_type = "ALL"
+	rq_type = rq_type.upper()
+	if rq_type == '*':
+		rq_type = "ALL"
 	type_mapping = rule.Type.__members__
-	if request_type in type_mapping:
-		request_type = type_mapping[request_type]
+	if rq_type in type_mapping:
+		request_type = type_mapping[rq_type]
 	else:
 		raise JMatrixParserError("Incorrect request type value to {}.".format(r))
-	rules.matrix_rules[source_hostname][dest_hostname][request_type] = action
+	rules.matrix_rules[source_hostname][dest_hostname][request_type] = action_value
 
 def _matrix_off_converter(r: str, rules: rule.Rules):
 	split_rules = r.split()
@@ -53,10 +53,10 @@ def _matrix_off_converter(r: str, rules: rule.Rules):
 	state_mapping = rule.State.__members__
 	state = state.upper()
 	if state in state_mapping:
-		state = state_mapping[state]
+		state_val = state_mapping[state]
 	else:
 		raise JMatrixParserError("Incorrect boolean values to {}.".format(r))
-	rules.matrix_off_rules[source_hostname] = state
+	rules.matrix_off_rules[source_hostname] = state_val
 
 
 # A mapping from uMatrix rule directives to converter functions

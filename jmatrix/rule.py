@@ -64,7 +64,7 @@ RULE_MATRIX_OFF_TYPE = typing.Dict[str, State]
 
 class Rules():
 	def __init__(self):
-		self.matrix_off_rules = {}  # type: RULE_MATRIX_TYPE
+		self.matrix_off_rules = {}  # type: RULE_MATRIX_OFF_TYPE
 		# buckle up, we're going on a ride.
 		self.matrix_rules = (
 			collections.defaultdict(
