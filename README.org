@@ -1,2 +1,4 @@
 
 * jmatrix - j's matrix
+
+jmatrix is a WIP uMatrix clone for qutebrowser.
