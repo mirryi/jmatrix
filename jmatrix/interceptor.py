@@ -53,7 +53,7 @@ IP_ADDR_NAIVE = re.compile(r'^\d+\.\d+\.\d+\.\d+$|^\[[\da-zA-Z:]+\]$')
 def _get_first_party_domain(host: str) -> str:
 	"""Get the part of a url to compare 'first party' domains."""
 	# TODO we should probably use the public suffix list here, instead of assuming TLD is 1 block
-	if IP_ADDR_NAIVE.search(host):
+	if not IP_ADDR_NAIVE.search(host):
 		return ".".join(host.rsplit('.', 2)[-2:])
 	return host
 

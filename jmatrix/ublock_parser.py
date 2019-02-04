@@ -17,6 +17,7 @@ import typing
 
 from jmatrix import rule
 
+
 class JMatrixParserError(ValueError):
 	pass
 
@@ -66,11 +67,13 @@ RULE_TO_CONVERTER = {
 }
 
 
-def rules_to_map(rule_lines: typing.List[str], rules: rule.Rules):
+def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules):
 	"""Convert uMatrix rules into jblock lists."""
 	for r in rule_lines:
 		# Remove comments
-		r = r.split('#', 1)[0]
+		r = r.split('#', 1)[0].strip()
+		if not r:
+			continue
 		r_list = r.split(":", 1)
 		if len(r_list) > 1:
 			directive = r_list[0]

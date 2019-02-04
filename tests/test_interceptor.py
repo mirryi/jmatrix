@@ -112,7 +112,7 @@ OVERALL_TESTS = {
 		("super.github.com", "http", "github.com", rule.Type.XHR),
 		("github.com", "http", "super.github.com", rule.Type.XHR),
 		("super.github.com", "http", "super.github.com", rule.Type.XHR),
-		("quetbrowser.org", "http", "qutebrowser.org", rule.Type.XHR),],
+		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),],
 	 "block": [
 		 ("github.com", "http", "githubassets.org", rule.Type.CSS),
 		 ("super.github.com", "http", "super.githubassets.org", rule.Type.CSS),
@@ -122,6 +122,24 @@ OVERALL_TESTS = {
 		 ("super.github.com", "http", "githubassets.com", rule.Type.XHR),
 		 ("github.com", "http", "super.githubassets.com", rule.Type.XHR),
 		 ("super.github.com", "http", "super.githubassets.com", rule.Type.XHR),],},
+
+	("* * * block",
+	 "* 1st-party * allow",):
+	{"allow": [
+		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),
+		("github.com", "http", "github.com", rule.Type.XHR),
+		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),
+		("github.com", "http", "super.github.com", rule.Type.XHR),
+		("super.github.com", "http", "super.github.com", rule.Type.XHR),
+		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),],
+	 "block": [
+		("qutebrowser.org", "http", "gitlab.com", rule.Type.XHR),],},
+
+	("* * * block",
+	 "matrix-off: qute-scheme true",):
+	{"allow": [
+		("version", "qute", "version", rule.Type.XHR),],
+	 "block": [("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),],},
 }
 
 

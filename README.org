@@ -1,4 +1,8 @@
 
 * jmatrix - j's matrix
 
-jmatrix is a WIP [[https://github.com/gorhill/uMatrix][uMatrix]] implementation for qutebrowser.
+jmatrix is a WIP [[https://github.com/gorhill/uMatrix][uMatrix]] implementation for qutebrowser. It operates on uMatrix
+style config files, to make switching easier.
+
+It tries to mirror uMatrix's behavior as close as possible. If you find a
+discrepancy that's not accounted for, please let me know.
