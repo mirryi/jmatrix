@@ -12,7 +12,7 @@ Here's a [[https://www.youtube.com/watch?v=UPxq8zkHXrg][small demo]].
 * Usage
 
 jmatrix reads from (or creates) a file at ~<config-dir>/jmatrix-rules~, which is
-~~/.config/qutebrowser/jmatrix-rules~ on Linux. It accepts most of the [[https://github.com/gorhill/uMatrix/wiki/Rules-syntax][uMatrix
+~$HOME/.config/qutebrowser/jmatrix-rules~ on Linux. It accepts most of the [[https://github.com/gorhill/uMatrix/wiki/Rules-syntax][uMatrix
 rules syntax]].
 
 After installing into qutebrowser, you will get a ~:jmatrix-read-config~ command
