@@ -135,3 +135,12 @@ def test_matrix_overall(r_text, result):
 	for passed_rule in result.get('allow', []):
 		args = passed_rule + (rule_obj,)
 		assert not interceptor.should_block(*args)
+
+
+def test_benchmark_null_match(benchmark):
+	"""Benchmarks the most complicated (ironically) match, the null match."""
+	rule_obj = rule.Rules()
+	ublock_parser.rules_to_map(["* * * block"], rule_obj)
+	benchmark(functools.partial(
+		interceptor.should_block,
+		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", rule.Type.FRAME, rule_obj))
