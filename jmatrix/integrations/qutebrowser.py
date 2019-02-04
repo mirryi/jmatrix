@@ -21,6 +21,8 @@ import os
 
 import jmatrix.rule, jmatrix.ublock_parser, jmatrix.interceptor
 
+from PyQt5.QtCore import QUrl
+
 from qutebrowser.api import interceptor, cmdutils, message
 
 from qutebrowser.config.configfiles import ConfigAPI  # noqa: F401
@@ -68,13 +70,17 @@ def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 		return
 	context_host = info.first_party_url.host()
 	context_scheme = info.first_party_url.scheme()
-	request_host = info.request_url.host()
+	request_scheme = info.request_url.scheme()
+	if request_scheme == "blob":
+		# Sometimes we get 'blob' urls which don't have their host decoded properly
+		request_host = QUrl(info.request_url.toString(QUrl.RemoveScheme)).host()
+	else:
+		request_host = info.request_url.host()
 
 	jmatrix_type = QUTEBROWSER_JMATRIX_MAPPING.get(request_type, jmatrix.rule.Type.OTHER)
 	if jmatrix.interceptor.should_block(
 			context_host, context_scheme,
 			request_host, jmatrix_type, JMATRIX_RULES):
-		print(info)
 		info.block()
 
 

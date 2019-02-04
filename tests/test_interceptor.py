@@ -131,9 +131,17 @@ OVERALL_TESTS = {
 		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),
 		("github.com", "http", "super.github.com", rule.Type.XHR),
 		("super.github.com", "http", "super.github.com", rule.Type.XHR),
-		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),],
+		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),
+		("twitch.tv", "https", "twitch.tv", rule.Type.OTHER),],
 	 "block": [
 		("qutebrowser.org", "http", "gitlab.com", rule.Type.XHR),],},
+
+	("* * * block",
+	 "matrix-off: qute-scheme true",):
+	{"allow": [
+		("version", "qute", "version", rule.Type.XHR),],
+	 "block": [("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),],},
+
 
 	("* * * block",
 	 "matrix-off: qute-scheme true",):
