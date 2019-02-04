@@ -6,3 +6,99 @@ style config files, to make switching easier.
 
 It tries to mirror uMatrix's behavior as close as possible. If you find a
 discrepancy that's not accounted for, please let me know.
+
+Here's a [[https://www.youtube.com/watch?v=UPxq8zkHXrg][small demo]].
+
+* Usage
+
+jmatrix reads from (or creates) a file at ~<config-dir>/jmatrix-rules~, which is
+~~/.config/qutebrowser/jmatrix-rules~ on Linux. It accepts most of the [[https://github.com/gorhill/uMatrix/wiki/Rules-syntax][uMatrix
+rules syntax]].
+
+After installing into qutebrowser, you will get a ~:jmatrix-read-config~ command
+to re-load the config on disk.
+
+* Caveats
+
+Right now, all we do is block incoming requests. uMatrix does a bit more than
+this, such [[https://github.com/gorhill/uMatrix/issues/319][as spoofing noscript tags when js is blocked]]. It also means we cannot
+block cookies (so those rules will be ignored).
+
+* Performance
+
+Right now, this is rather unoptimized, but latency added seems to be around 0.05
+ms. I'm duplicating a lot of work at the moment, so this could be improved
+substantially.
+
+#+begin_example
+----------------------------------------------------- benchmark: 1 tests ----------------------------------------------------
+Name (time in us)                 Min       Max     Mean  StdDev   Median     IQR  Outliers  OPS (Kops/s)  Rounds  Iterations
+-----------------------------------------------------------------------------------------------------------------------------
+test_benchmark_null_match     50.9500  148.1610  54.3943  6.0872  53.3000  1.0901   343;635       18.3843    9987           1
+-----------------------------------------------------------------------------------------------------------------------------
+#+end_example
+
+* Correctness
+
+I lifted the matching algorithm almost entirely from uMatrix (since it has a very
+weird hierarchy that was not easy to replicate without it). The logic for
+determining first-party hosts is currently a little questionable, uMatrix uses
+the [[https://github.com/gorhill/publicsuffixlist.js][public suffix list]], but I'm just assuming the tld is one block long.
+
+If you find an issue, please report it!
+
+* Installation
+** qutebrowser
+Right now, this extension is loaded through the config system, using
+unstable api's. That means this is prone to break at any time, and you may
+get qutebrowser crashes.
+
+If you are installing into qutebrowser, you already have all the needed
+dependencies. The tricky bit is getting the correct version of qutebrowser to
+use this. We depend heavily on knowing what resource type a request is, which
+isn't implemented on master yet. If you'd like to try this out, please apply the
+patch in [[https://github.com/qutebrowser/qutebrowser/pull/4525][this pull request]] to get that feature on qtwebengine.
+
+Once you are completely set up with that, place this repo in your config dir,
+and add this to your ~config.py~.
+
+#+begin_src python
+  import sys, os
+  sys.path.append(os.path.join(sys.path[0], 'jmatrix'))
+  config.source("jmatrix/jmatrix/integrations/qutebrowser.py")
+#+end_src
+
+If you run ~:config-source~ it will cause double-initialization, which will
+double your latency and make it impossible to reload the jmatrix config. Please
+don't do that!
+
+** Dependencies
+- ~python3~ or ~pypy3~
+** Tests
+- ~pytest-benchmark~
+
+If you pass pep8, you fail the style tests.
+
+There are make targets for common operations.
+
+* Design
+
+The matrix is stored as a:
+
+#+begin_example
+Dict[str, Dict[str, Dict[Type, Action]]]
+#+end_example
+
+Because of this, we make a ludicrous amount of calls to dict get. This is
+amplified quite a bit due to the poor design of the matcher currently (creating
+a lot of unneeded hashtable lookups).
+
+[[file:jmatrix/rule.py::class%20Action(enum.Enum):][Take a look at rule.py]] if you would like more information about the high level
+design.
+
+* Support
+
+Let me know in ~#qutebrowser~ on freenode if you see any issues, or send me a mail.
+
+* License
+jblock is licensed under the GPLv3+.
