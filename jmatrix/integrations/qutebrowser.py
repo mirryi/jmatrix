@@ -72,10 +72,10 @@ def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 	context_scheme = info.first_party_url.scheme()
 	request_scheme = info.request_url.scheme()
 	if request_scheme == "blob":
-		# Sometimes we get 'blob' urls which don't have their host decoded properly
-		request_host = QUrl(info.request_url.toString(QUrl.RemoveScheme)).host()
-	else:
-		request_host = info.request_url.host()
+		# These 'blob' urls don't seem to be actual requests, but internal chrome stuff
+		# Let them pass, since they aren't real requests and break things if we block them.
+		return
+	request_host = info.request_url.host()
 
 	jmatrix_type = QUTEBROWSER_JMATRIX_MAPPING.get(request_type, jmatrix.rule.Type.OTHER)
 	if jmatrix.interceptor.should_block(
