@@ -17,7 +17,8 @@
 """Functions to determine if a request should be blocked or not."""
 
 import itertools
-
+import typing
+import re
 
 from jmatrix import rule
 
@@ -47,10 +48,34 @@ def _hostname_widen_list(hostname: str):
 	l.append('*')
 	return l
 
+IP_ADDR_NAIVE = re.compile(r'^\d+\.\d+\.\d+\.\d+$|^\[[\da-zA-Z:]+\]$')
+# TODO should we cache this?
+def _get_first_party_domain(host: str) -> str:
+	"""Get the part of a url to compare 'first party' domains."""
+	# TODO we should probably use the public suffix list here, instead of assuming TLD is 1 block
+	if IP_ADDR_NAIVE.search(host):
+		return ".".join(host.rsplit('.', 2)[-2:])
+	return host
+
+def _evaluate_cell_z(
+		src_hostname: typing.List[str], request_hostname: str,
+		request_type: rule.Type, rules: rule.Rules) -> typing.Optional[rule.Action]:
+	for hostname in src_hostname:
+		r1 = rules.matrix_rules.get(hostname, None)
+		if r1 is None:
+			continue
+		r2 = r1.get(request_hostname, None)
+		if r2 is None:
+			continue
+		r3 = r2.get(request_type, None)
+		if r3 is not None:
+			return r3
+	return None
 
 def should_block(
 		context_hostname: str, context_scheme: str, request_hostname: str,
 		request_type: rule.Type, rules: rule.Rules) -> bool:
+	"""Check if we should block a certain url."""
 	widened_context = _hostname_widen_list(context_hostname)
 	widened_request = _hostname_widen_list(request_hostname)
 	# First check if we have a matrix-off rule
@@ -61,37 +86,75 @@ def should_block(
 		# We should be off for this context
 		return False
 
-	# Begin checking actual matrix rules. Precedence looks like:
-	# contextHostname -> destHostname -> type
+	# uMatrix dosen't have any simple rules to it's precedence. Because of this, we just follow the algorithm defined in:
 	#
-	# HOWEVER: Blacklists take precedence, ie: * * frame block won't allow for any whitelisting on any non-cell rule.
+	# https://github.com/gorhill/uMatrix/blob/054935d025c32f62b8dc35a27fbf7fa07d9f9589/src/js/matrix.js#L416
 
-	# Block if no action
-	action = True
-	for w_c in widened_context:
-		context_rules = rules.matrix_rules.get(w_c)
-		if not context_rules:
-			continue
-		# TODO FIXME handle first-party
-		for h_c in widened_request:
-			hostname_rules = context_rules.get(h_c)
-			if not hostname_rules:
-				continue
-			# types don't have any cascading, just check our type and *
-			for t_c in [request_type, rule.Type.ALL]:
-				final_rule = hostname_rules.get(t_c)
-				if not final_rule:
-					continue
-				# If we get block/accept, we're done. If we get inherit, we have to continue.
-				if final_rule == rule.Action.BLOCK:
-					return True
-				elif final_rule == rule.Action.ALLOW:
-					action = False
-					# We want to allow this request, but if there's a more general rule on a higher precedence,
-					#
-					# However, '* * type' seems to override all non-exact rules (?!?) instead of following normal
-					# precedence.
-					break
+	# Exact hostname, exact type
+	r = _evaluate_cell_z(widened_context, request_hostname, request_type, rules)
+	if r == rule.Action.ALLOW: return False
+	elif r == rule.Action.BLOCK: return True
+
+	# Exact hostname, any type
+	r_override = _evaluate_cell_z(widened_context, request_hostname, rule.Type.ALL, rules)
+	if r == rule.Action.BLOCK: return True
+
+	dest = request_hostname
+	first_party_domain = _get_first_party_domain(request_hostname)
+	if (_get_first_party_domain(context_hostname) != first_party_domain):
+		first_party_domain = ""
+
+	# Ancestor cells up to 1st-party request domain
+	if first_party_domain:
+		for domain in widened_request:
+			dest = domain
+			if domain == first_party_domain:
+				break
+			r = _evaluate_cell_z(widened_context, domain, request_type, rules)
+			if r == rule.Action.ALLOW: return False
+			elif r == rule.Action.BLOCK: return True
+
+			# Don't override a more specific allow rule (??)
+			if r_override != rule.Action.ALLOW:
+				r_override = _evaluate_cell_z(widened_context, domain, rule.Type.ALL, rules)
+				if r_override == rule.Action.BLOCK: return True
+
+		# First party special case cell
+		r = _evaluate_cell_z(widened_context, '1st-party', request_type, rules)
+		if r == rule.Action.ALLOW: return False
+		elif r == rule.Action.BLOCK: return True
+
+		# Don't override a more specific allow rule (??)
+		if r_override != rule.Action.ALLOW:
+			r_override = _evaluate_cell_z(widened_context, '1st-party', rule.Type.ALL, rules)
+			if r_override == rule.Action.BLOCK: return True
+		search_domains = _hostname_widen_list(dest)
+	else:
+		search_domains = widened_request
+
+	# Go up to root
+	for domain in search_domains:
+		if domain == '*':
+			break
+		r = _evaluate_cell_z(widened_context, domain, request_type, rules)
+		if r == rule.Action.ALLOW: return False
+		elif r == rule.Action.BLOCK: return True
+
+		# Don't override a more specific allow rule (??)
+		if r_override != rule.Action.ALLOW:
+			r_override = _evaluate_cell_z(widened_context, domain, rule.Type.ALL, rules)
+			if r_override == rule.Action.BLOCK: return True
+
+	# Hostname specific type cells
+	r = _evaluate_cell_z(widened_context, '*', request_type, rules)
+	if r == rule.Action.BLOCK: return True
+	if r_override == rule.Action.ALLOW: return False
+	if r == rule.Action.ALLOW: return False
+
+	# Hostname type api call
+	r = _evaluate_cell_z(widened_context, '*', rule.Type.ALL, rules)
+	if r == rule.Action.BLOCK: return True
+	if r == rule.Action.ALLOW: return False
 
 	# No rules, block
-	return action
+	return True
