@@ -37,7 +37,7 @@ MATRIX_RULE_TESTS = {
 def test_matrix_off(r, result):
 	rule_obj = rule.Rules()
 	ublock_parser.rules_to_map([r], rule_obj)
-	assert rule_obj.matrix_off_rules == result
+	assert rule_obj.matrix_flags == result
 
 
 @pytest.mark.parametrize(('r', 'result'), MATRIX_RULE_TESTS.items())

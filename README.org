@@ -50,6 +50,12 @@ the [[https://github.com/gorhill/publicsuffixlist.js][public suffix list]], but 
 
 If you find an issue, please report it!
 
+Right now, we support these rules:
+
+- ~rule:~
+- ~matrix-off:~
+- ~https-strict:~
+
 * Installation
 ** qutebrowser
 Right now, this extension is loaded through the config system, using
