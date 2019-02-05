@@ -21,7 +21,7 @@ from jmatrix import rule
 class JMatrixParserError(ValueError):
 	pass
 
-def _rule_converter(r: str, rules: rule.Rules):
+def _rule_converter(d: str, r: str, rules: rule.Rules):
 	split_rules = r.split()
 	if not (2 <= len(split_rules) <= 4):
 		raise JMatrixParserError("Incorrect number of rules to: {}.".format(r))
@@ -49,24 +49,38 @@ def _rule_converter(r: str, rules: rule.Rules):
 		raise JMatrixParserError("Incorrect request type value to {}.".format(r))
 	rules.matrix_rules[source_hostname][dest_hostname][request_type] = action_value
 
-def _matrix_off_converter(r: str, rules: rule.Rules):
+def _matrix_off_converter(d: str, r: str, rules: rule.Rules):
 	split_rules = r.split()
 	if len(split_rules) != 2:
 		raise JMatrixParserError("Incorrect number of rules to {}.".format(r))
 	source_hostname, state = split_rules
-	state_mapping = rule.State.__members__
+	state_mapping = rule.Flag.__members__
 	state = state.upper()
 	if state in state_mapping:
 		state_val = state_mapping[state]
 	else:
 		raise JMatrixParserError("Incorrect boolean values to {}.".format(r))
-	rules.matrix_off_rules[source_hostname] = state_val
+	rules.matrix_off_rules[source_hostname].add(state_val)
+
+def _matrix_flag_converter(d: str, r: str, rules: rule.Rules):
+	split_rules = r.split()
+	if len(split_rules) != 2:
+		raise JMatrixParserError("Incorrect number of rules to {}.".format(r))
+	source_hostname, state = split_rules
+	state_mapping = rule.Flag.__members__
+	directive = d.upper().replace("-", "_")
+	if directive in state_mapping:
+		flag_val = state_mapping[directive]
+	else:
+		raise JMatrixParserError("Incorrect boolean values to {}.".format(r))
+	rules.matrix_off_rules[source_hostname].add(flag_val)
 
 
 # A mapping from uMatrix rule directives to converter functions
 RULE_TO_CONVERTER = {
 	"rule": _rule_converter,
 	"matrix-off": _matrix_off_converter,
+	"https-strict": _matrix_flag_converter,
 }
 
 
@@ -89,4 +103,4 @@ def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules):
 		if directive not in RULE_TO_CONVERTER:
 			print("[jmatrix]: rule '{}' ignored!".format(directive))
 		else:
-			RULE_TO_CONVERTER[directive](line.strip(), rules)
+			RULE_TO_CONVERTER[directive](directive, line.strip(), rules)

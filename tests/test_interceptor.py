@@ -142,12 +142,29 @@ OVERALL_TESTS = {
 		("version", "qute", "version", "qute", rule.Type.XHR),],
 	 "block": [("qutebrowser.org", "http", "qutebrowser.org", "http", rule.Type.XHR),],},
 
-
 	("* * * block",
 	 "matrix-off: qute-scheme true",):
 	{"allow": [
 		("version", "qute", "version", "qute", rule.Type.XHR),],
 	 "block": [("qutebrowser.org", "http", "qutebrowser.org", "http", rule.Type.XHR),],},
+
+
+	# HTTPS-Strict Test
+	("* 1st-party * allow",
+	 "https-strict: qutebrowser.org true",):
+	{"allow": [
+		("qutebrowser.org", "https", "qutebrowser.org", "https", rule.Type.CSS),
+		("super.qutebrowser.org", "https", "qutebrowser.org", "https", rule.Type.CSS),
+		("qutebrowser.org", "https", "super.qutebrowser.org", "https", rule.Type.CSS),
+		("super.qutebrowser.org", "https", "super.qutebrowser.org", "https", rule.Type.CSS),
+
+		("qutebrowser.org", "http", "qutebrowser.org", "https", rule.Type.CSS),
+	],
+	 "block": [
+		("qutebrowser.org", "https", "qutebrowser.org", "http", rule.Type.CSS),
+		("super.qutebrowser.org", "https", "qutebrowser.org", "http", rule.Type.CSS),
+		("qutebrowser.org", "https", "super.qutebrowser.org", "http", rule.Type.CSS),
+		("super.qutebrowser.org", "https", "super.qutebrowser.org", "http", rule.Type.CSS),],},
 }
 
 

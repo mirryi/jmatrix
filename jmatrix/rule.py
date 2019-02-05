@@ -69,8 +69,8 @@ https://github.com/gorhill/uMatrix/wiki/Rules-syntax
 	FRAME = 8
 	OTHER = 9
 
-class State(enum.Enum):
-	"""A uMatrix state (for matrix-off).
+class Flag(enum.Enum):
+	"""A uMatrix flag (for matrix-off, https-strict, etc).
 
 Defined formally in the uMatrix rule documentation.
 
@@ -80,13 +80,14 @@ https://github.com/gorhill/uMatrix/wiki/Rules-syntax
 	# TRUE means matrix is OFF, not on!
 	TRUE = 1
 	FALSE = 2
+	HTTPS_STRICT = 3
 
 RULE_MATRIX_TYPE = typing.Dict[str, typing.Dict[str, typing.Dict[Type, Action]]]
-RULE_MATRIX_OFF_TYPE = typing.Dict[str, State]
+RULE_MATRIX_OFF_TYPE = typing.Dict[str, typing.Set[Flag]]
 
 class Rules():
 	def __init__(self):
-		self.matrix_off_rules = {}  # type: RULE_MATRIX_OFF_TYPE
+		self.matrix_off_rules = collections.defaultdict(set)  # type: RULE_MATRIX_OFF_TYPE
 		# buckle up, we're going on a ride.
 		self.matrix_rules = (
 			collections.defaultdict(

@@ -79,13 +79,22 @@ def should_block(
 	"""Check if we should block a certain url."""
 	widened_context = _hostname_widen_list(context_hostname)
 	widened_request = _hostname_widen_list(request_hostname)
+	is_https = context_scheme == "https"
+
 	# First check if we have a matrix-off rule
 	context_scheme += "-scheme"
 	if (any(map(
-			lambda host: rules.matrix_off_rules.get(host, False),
+			lambda host: rule.Flag.TRUE in rules.matrix_off_rules.get(host, []),
 			itertools.chain(widened_context, [context_scheme])))):
 		# We should be off for this context
 		return False
+
+	if (any(map(
+			lambda host: rule.Flag.HTTPS_STRICT in rules.matrix_off_rules.get(host, []),
+			itertools.chain(widened_context, [context_scheme])))):
+		# We are being strict on https, block if needed
+		if is_https and request_scheme != "https":
+			return True
 
 	# uMatrix dosen't have any simple rules to it's precedence. Because of this, we just follow the algorithm defined in:
 	#

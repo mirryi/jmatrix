@@ -19,9 +19,9 @@ from jmatrix import ublock_parser, rule
 
 
 MATRIX_OFF_TESTS = {
-	"matrix-off: chrome-scheme true": {"chrome-scheme": rule.State.TRUE},
-	"\tmatrix-off:\tchrome-scheme\ttrue\t": {"chrome-scheme": rule.State.TRUE},
-	"matrix-off: qute-scheme False": {"qute-scheme": rule.State.FALSE},
+	"matrix-off: chrome-scheme true": {"chrome-scheme": set([rule.Flag.TRUE])},
+	"\tmatrix-off:\tchrome-scheme\ttrue\t": {"chrome-scheme": set([rule.Flag.TRUE])},
+	"matrix-off: qute-scheme False": {"qute-scheme": set([rule.Flag.FALSE])},
 }
 
 MATRIX_RULE_TESTS = {
