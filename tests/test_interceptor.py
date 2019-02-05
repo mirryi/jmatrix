@@ -41,113 +41,113 @@ def test_matrix_rule_benchmark(r, result, benchmark):
 
 OVERALL_TESTS = {
 	("matrix-off: * true",): {"allow": [
-		("gitlab.com", "http", "gitlab.com", rule.Type.IMAGE),
-		("git.gitlab.com", "https", "gitlab.com", rule.Type.IMAGE),]},
+		("gitlab.com", "http", "gitlab.com", "http", rule.Type.IMAGE),
+		("git.gitlab.com", "http", "gitlab.com", "http", rule.Type.IMAGE),]},
 
 	("* * * block",
 	 "* * css allow",):
 	{"allow": [
-		("gitlab.com", "http", "gitlab.com", rule.Type.CSS),],
+		("gitlab.com", "http", "gitlab.com", "http", rule.Type.CSS),],
 	 "block": [
-		 ("gitlab.com", "http", "gitlab.com", rule.Type.XHR),],},
+		 ("gitlab.com", "http", "gitlab.com", "http", rule.Type.XHR),],},
 
 	("* * * block",
 	 "* * css allow",):
 	{"allow": [
-		("gitlab.com", "http", "gitlab.com", rule.Type.CSS),],
+		("gitlab.com", "http", "gitlab.com", "http", rule.Type.CSS),],
 	 "block": [
-		 ("gitlab.com", "http", "gitlab.com", rule.Type.XHR),],},
+		 ("gitlab.com", "http", "gitlab.com", "http", rule.Type.XHR),],},
 
 	("* qutebrowser.bad * block",
 	 "qutebrowser.org qutebrowser.bad * allow",):
 	{"allow": [
-		("qutebrowser.org", "http", "qutebrowser.bad", rule.Type.CSS),
-		("sub.qutebrowser.org", "http", "qutebrowser.bad", rule.Type.CSS),
-		("www.sub.qutebrowser.org", "http", "www.qutebrowser.bad", rule.Type.CSS),],
+		("qutebrowser.org", "http", "qutebrowser.bad", "http", rule.Type.CSS),
+		("sub.qutebrowser.org", "http", "qutebrowser.bad", "http", rule.Type.CSS),
+		("www.sub.qutebrowser.org", "http", "www.qutebrowser.bad", "http", rule.Type.CSS),],
 	 "block": [
-		 ("non-qutebrowser.org", "http", "qutebrowser.bad", rule.Type.CSS),
-		 ("non-qutebrowser.org", "http", "www.qutebrowser.bad", rule.Type.CSS),],},
+		 ("non-qutebrowser.org", "http", "qutebrowser.bad", "http", rule.Type.CSS),
+		 ("non-qutebrowser.org", "http", "www.qutebrowser.bad", "http", rule.Type.CSS),],},
 
 	("* * frame block",
 	 "github.com githubassets.com * allow",):
 	{"allow": [
-		("github.com", "http", "githubassets.com", rule.Type.CSS),
-		("github.com", "http", "super.githubassets.com", rule.Type.CSS),
-		("super.github.com", "http", "super.githubassets.com", rule.Type.CSS),
-		("super.github.com", "http", "githubassets.com", rule.Type.CSS),
+		("github.com", "http", "githubassets.com", "http", rule.Type.CSS),
+		("github.com", "http", "super.githubassets.com", "http", rule.Type.CSS),
+		("super.github.com", "http", "super.githubassets.com", "http", rule.Type.CSS),
+		("super.github.com", "http", "githubassets.com", "http", rule.Type.CSS),
 
 	],
 	 "block": [
-		 ("github.com", "http", "qutebrowser.org", rule.Type.CSS),
-		 ("qutebrowser.org", "http", "githubassets.com", rule.Type.CSS),
+		 ("github.com", "http", "qutebrowser.org", "http", rule.Type.CSS),
+		 ("qutebrowser.org", "http", "githubassets.com", "http", rule.Type.CSS),
 		 # TODO how should we block this
-		 ("github.com", "http", "githubassets.com", rule.Type.FRAME),
-		 ("github.com", "http", "super.githubassets.com", rule.Type.FRAME),
-		 ("super.github.com", "http", "super.githubassets.com", rule.Type.FRAME),
+		 ("github.com", "http", "githubassets.com", "http", rule.Type.FRAME),
+		 ("github.com", "http", "super.githubassets.com", "http", rule.Type.FRAME),
+		 ("super.github.com", "http", "super.githubassets.com", "http", rule.Type.FRAME),
 		 ],},
 
 	("com * frame block",
 	 "github.com githubassets.com * allow",):
 	{"allow": [
-		("github.com", "http", "githubassets.com", rule.Type.CSS),
-		("github.com", "http", "super.githubassets.com", rule.Type.CSS),
-		("super.github.com", "http", "super.githubassets.com", rule.Type.CSS),
-		("super.github.com", "http", "githubassets.com", rule.Type.CSS),
+		("github.com", "http", "githubassets.com", "http", rule.Type.CSS),
+		("github.com", "http", "super.githubassets.com", "http", rule.Type.CSS),
+		("super.github.com", "http", "super.githubassets.com", "http", rule.Type.CSS),
+		("super.github.com", "http", "githubassets.com", "http", rule.Type.CSS),
 
 	],
 	 "block": [
-		 ("github.com", "http", "qutebrowser.org", rule.Type.CSS),
-		 ("qutebrowser.org", "http", "githubassets.com", rule.Type.CSS),
+		 ("github.com", "http", "qutebrowser.org", "http", rule.Type.CSS),
+		 ("qutebrowser.org", "http", "githubassets.com", "http", rule.Type.CSS),
 		 # TODO how should we block this
-		 ("github.com", "http", "githubassets.com", rule.Type.FRAME),
-		 ("github.com", "http", "super.githubassets.com", rule.Type.FRAME),
-		 ("super.github.com", "http", "super.githubassets.com", rule.Type.FRAME),
+		 ("github.com", "http", "githubassets.com", "http", rule.Type.FRAME),
+		 ("github.com", "http", "super.githubassets.com", "http", rule.Type.FRAME),
+		 ("super.github.com", "http", "super.githubassets.com", "http", rule.Type.FRAME),
 		 ],},
 
 	("* * xhr allow",
 	 "github.com githubassets.com * block",):
 	{"allow": [
-		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),
-		("github.com", "http", "github.com", rule.Type.XHR),
-		("super.github.com", "http", "github.com", rule.Type.XHR),
-		("github.com", "http", "super.github.com", rule.Type.XHR),
-		("super.github.com", "http", "super.github.com", rule.Type.XHR),
-		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),],
+		("qutebrowser.org", "http", "qutebrowser.org", "http", rule.Type.XHR),
+		("github.com", "http", "github.com", "http", rule.Type.XHR),
+		("super.github.com", "http", "github.com", "http", rule.Type.XHR),
+		("github.com", "http", "super.github.com", "http", rule.Type.XHR),
+		("super.github.com", "http", "super.github.com", "http", rule.Type.XHR),
+		("qutebrowser.org", "http", "qutebrowser.org", "http", rule.Type.XHR),],
 	 "block": [
-		 ("github.com", "http", "githubassets.org", rule.Type.CSS),
-		 ("super.github.com", "http", "super.githubassets.org", rule.Type.CSS),
-		 ("qutebrowser.org", "http", "githubassets.com", rule.Type.CSS),
+		 ("github.com", "http", "githubassets.org", "http", rule.Type.CSS),
+		 ("super.github.com", "http", "super.githubassets.org", "http", rule.Type.CSS),
+		 ("qutebrowser.org", "http", "githubassets.com", "http", rule.Type.CSS),
 		 # TODO how should we block this
-		 ("github.com", "http", "githubassets.com", rule.Type.XHR),
-		 ("super.github.com", "http", "githubassets.com", rule.Type.XHR),
-		 ("github.com", "http", "super.githubassets.com", rule.Type.XHR),
-		 ("super.github.com", "http", "super.githubassets.com", rule.Type.XHR),],},
+		 ("github.com", "http", "githubassets.com", "http", rule.Type.XHR),
+		 ("super.github.com", "http", "githubassets.com", "http", rule.Type.XHR),
+		 ("github.com", "http", "super.githubassets.com", "http", rule.Type.XHR),
+		 ("super.github.com", "http", "super.githubassets.com", "http", rule.Type.XHR),],},
 
 	("* * * block",
 	 "* 1st-party * allow",):
 	{"allow": [
-		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),
-		("github.com", "http", "github.com", rule.Type.XHR),
-		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),
-		("github.com", "http", "super.github.com", rule.Type.XHR),
-		("super.github.com", "http", "super.github.com", rule.Type.XHR),
-		("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),
-		("twitch.tv", "https", "twitch.tv", rule.Type.OTHER),],
+		("qutebrowser.org", "http", "qutebrowser.org", "http", rule.Type.XHR),
+		("github.com", "http", "github.com", "http", rule.Type.XHR),
+		("qutebrowser.org", "http", "qutebrowser.org", "http", rule.Type.XHR),
+		("github.com", "http", "super.github.com", "http", rule.Type.XHR),
+		("super.github.com", "http", "super.github.com", "http", rule.Type.XHR),
+		("qutebrowser.org", "http", "qutebrowser.org", "http", rule.Type.XHR),
+		("twitch.tv", "http", "twitch.tv", "http", rule.Type.OTHER),],
 	 "block": [
-		("qutebrowser.org", "http", "gitlab.com", rule.Type.XHR),],},
+		("qutebrowser.org", "http", "gitlab.com", "http", rule.Type.XHR),],},
 
 	("* * * block",
 	 "matrix-off: qute-scheme true",):
 	{"allow": [
-		("version", "qute", "version", rule.Type.XHR),],
-	 "block": [("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),],},
+		("version", "qute", "version", "qute", rule.Type.XHR),],
+	 "block": [("qutebrowser.org", "http", "qutebrowser.org", "http", rule.Type.XHR),],},
 
 
 	("* * * block",
 	 "matrix-off: qute-scheme true",):
 	{"allow": [
-		("version", "qute", "version", rule.Type.XHR),],
-	 "block": [("qutebrowser.org", "http", "qutebrowser.org", rule.Type.XHR),],},
+		("version", "qute", "version", "qute", rule.Type.XHR),],
+	 "block": [("qutebrowser.org", "http", "qutebrowser.org", "http", rule.Type.XHR),],},
 }
 
 
@@ -169,7 +169,7 @@ def test_benchmark_null_match(benchmark):
 	ublock_parser.rules_to_map(["* * * block"], rule_obj)
 	benchmark(functools.partial(
 		interceptor.should_block,
-		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", rule.Type.FRAME, rule_obj))
+		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", "http", rule.Type.FRAME, rule_obj))
 
 @pytest.fixture(scope="session")
 def stock_rules():
@@ -183,13 +183,13 @@ def test_benchmark_complex_null_match(stock_rules, benchmark):
 	ublock_parser.rules_to_map(stock_rules, rule_obj)
 	benchmark(functools.partial(
 		interceptor.should_block,
-		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", rule.Type.FRAME, rule_obj))
+		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", "http", rule.Type.FRAME, rule_obj))
 
 def test_benchmark_complex_block(stock_rules, benchmark):
 	"""Benchmarks a particularly slow match I found."""
 	rule_obj = rule.Rules()
 	ublock_parser.rules_to_map(stock_rules, rule_obj)
-	# https://www.redditstatic.com/desktop2x/fonts/IBMPlexSans/Regular-e6bbcdd30d3bd4d6b170bcb6d3552cab.woff
+	# http://www.redditstatic.com/desktop2x/fonts/IBMPlexSans/Regular-e6bbcdd30d3bd4d6b170bcb6d3552cab.woff
 	benchmark(functools.partial(
 		interceptor.should_block,
-		"www.redditstatic.com", "https", "www.reddit.com", rule.Type.OTHER, rule_obj))
+		"www.redditstatic.com", "http", "www.reddit.com", "http", rule.Type.OTHER, rule_obj))

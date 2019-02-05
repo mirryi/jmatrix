@@ -73,7 +73,8 @@ def _evaluate_cell_z(
 	return None
 
 def should_block(
-		context_hostname: str, context_scheme: str, request_hostname: str,
+		context_hostname: str, context_scheme: str,
+		request_hostname: str, request_scheme: str,
 		request_type: rule.Type, rules: rule.Rules) -> bool:
 	"""Check if we should block a certain url."""
 	widened_context = _hostname_widen_list(context_hostname)

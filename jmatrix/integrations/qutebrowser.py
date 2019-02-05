@@ -83,7 +83,8 @@ def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 	jmatrix_type = QUTEBROWSER_JMATRIX_MAPPING.get(request_type, jmatrix.rule.Type.OTHER)
 	if jmatrix.interceptor.should_block(
 			context_host, context_scheme,
-			request_host, jmatrix_type, JMATRIX_RULES):
+			request_host, request_scheme,
+			jmatrix_type, JMATRIX_RULES):
 		info.block()
 
 
