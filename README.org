@@ -110,4 +110,4 @@ design.
 Let me know in ~#qutebrowser~ on freenode if you see any issues, or send me a mail.
 
 * License
-jblock is licensed under the GPLv3+.
+jmatrix is licensed under the GPLv3+.

@@ -85,7 +85,7 @@ RULE_TO_CONVERTER = {
 
 
 def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules):
-	"""Convert uMatrix rules into jblock lists."""
+	"""Convert uMatrix rules into jmatrix lists."""
 	for r in rule_lines:
 		# Remove comments
 		r = r.split('#', 1)[0].strip()
