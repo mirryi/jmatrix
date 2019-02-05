@@ -39,6 +39,9 @@ def _rule_converter(r: str, rules: rule.Rules):
 	rq_type = rq_type.upper()
 	if rq_type == '*':
 		rq_type = "ALL"
+	# https://github.com/gorhill/uMatrix/issues/759
+	elif rq_type == 'PLUGIN':
+		rq_type = 'MEDIA'
 	type_mapping = rule.Type.__members__
 	if rq_type in type_mapping:
 		request_type = type_mapping[rq_type]

@@ -170,3 +170,26 @@ def test_benchmark_null_match(benchmark):
 	benchmark(functools.partial(
 		interceptor.should_block,
 		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", rule.Type.FRAME, rule_obj))
+
+@pytest.fixture(scope="session")
+def stock_rules():
+	with open("tests/data/stock-rules") as f:
+		lines = f.readlines()
+	return lines
+
+def test_benchmark_complex_null_match(stock_rules, benchmark):
+	"""Benchmarks the null match with lots of extra rules."""
+	rule_obj = rule.Rules()
+	ublock_parser.rules_to_map(stock_rules, rule_obj)
+	benchmark(functools.partial(
+		interceptor.should_block,
+		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", rule.Type.FRAME, rule_obj))
+
+def test_benchmark_complex_block(stock_rules, benchmark):
+	"""Benchmarks a particularly slow match I found."""
+	rule_obj = rule.Rules()
+	ublock_parser.rules_to_map(stock_rules, rule_obj)
+	# https://www.redditstatic.com/desktop2x/fonts/IBMPlexSans/Regular-e6bbcdd30d3bd4d6b170bcb6d3552cab.woff
+	benchmark(functools.partial(
+		interceptor.should_block,
+		"www.redditstatic.com", "https", "www.reddit.com", rule.Type.OTHER, rule_obj))
