@@ -83,11 +83,11 @@ https://github.com/gorhill/uMatrix/wiki/Rules-syntax
 	HTTPS_STRICT = 3
 
 RULE_MATRIX_TYPE = typing.Dict[str, typing.Dict[str, typing.Dict[Type, Action]]]
-RULE_MATRIX_OFF_TYPE = typing.Dict[str, typing.Set[Flag]]
+RULE_MATRIX_FLAGS_TYPE = typing.Dict[str, typing.Set[Flag]]
 
 class Rules():
 	def __init__(self):
-		self.matrix_off_rules = collections.defaultdict(set)  # type: RULE_MATRIX_OFF_TYPE
+		self.matrix_flags = collections.defaultdict(set)  # type: RULE_MATRIX_FLAGS_TYPE
 		# buckle up, we're going on a ride.
 		self.matrix_rules = (
 			collections.defaultdict(

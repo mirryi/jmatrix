@@ -60,7 +60,7 @@ def _matrix_off_converter(d: str, r: str, rules: rule.Rules):
 		state_val = state_mapping[state]
 	else:
 		raise JMatrixParserError("Incorrect boolean values to {}.".format(r))
-	rules.matrix_off_rules[source_hostname].add(state_val)
+	rules.matrix_flags[source_hostname].add(state_val)
 
 def _matrix_flag_converter(d: str, r: str, rules: rule.Rules):
 	split_rules = r.split()
@@ -73,7 +73,7 @@ def _matrix_flag_converter(d: str, r: str, rules: rule.Rules):
 		flag_val = state_mapping[directive]
 	else:
 		raise JMatrixParserError("Incorrect boolean values to {}.".format(r))
-	rules.matrix_off_rules[source_hostname].add(flag_val)
+	rules.matrix_flags[source_hostname].add(flag_val)
 
 
 # A mapping from uMatrix rule directives to converter functions
