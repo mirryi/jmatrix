@@ -66,7 +66,10 @@ QUTEBROWSER_JMATRIX_MAPPING = {
 
 def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 	request_type = info.resource_type
-	if request_type == interceptor.ResourceType.MAIN_FRAME:
+	# Never blacklist main navigation (should this be changed?)
+	if (request_type == interceptor.ResourceType.MAIN_FRAME or
+		# If we are already blocked, don't waste our time here.
+		info.is_blocked):
 		return
 	context_host = info.first_party_url.host()
 	context_scheme = info.first_party_url.scheme()
