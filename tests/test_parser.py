@@ -45,3 +45,21 @@ def test_matrix_rule(r, result):
 	rule_obj = rule.Rules()
 	ublock_parser.rules_to_map([r], rule_obj)
 	assert rule_obj.matrix_rules == result
+
+@pytest.mark.parametrize(('r', 'result'), MATRIX_OFF_TESTS.items())
+def test_matrix_off_serialize(r, result):
+	rule_obj = rule.Rules()
+	ublock_parser.rules_to_map([r], rule_obj)
+	lines = ublock_parser.map_to_rules(rule_obj)
+	assert lines.split() == r.strip().lower().split()
+
+
+@pytest.mark.parametrize(('r', 'result'), MATRIX_RULE_TESTS.items())
+def test_matrix_rule_serialize(r, result):
+	if "block" not in r and "allow" not in r:
+		# the serialize doesn't leave "allow" off
+		return
+	rule_obj = rule.Rules()
+	ublock_parser.rules_to_map([r], rule_obj)
+	lines = ublock_parser.map_to_rules(rule_obj)
+	assert lines == r

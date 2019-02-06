@@ -104,3 +104,39 @@ def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules) -> None:
 			print("[jmatrix]: rule '{}' ignored!".format(directive))
 		else:
 			RULE_TO_CONVERTER[directive](directive, line.strip(), rules)
+
+
+def map_to_rules(rules: rule.Rules) -> str:
+    """Convert jmatrix rules to uMatrix compatible text."""
+    lines = []
+    for host, flags in rules.matrix_flags.items():
+            for flag in flags:
+                    if flag == rule.Flag.TRUE:
+                            flag_s = "matrix-off"
+                            state = "true"
+                    elif flag == rule.Flag.FALSE:
+                            flag_s = "matrix-off"
+                            state = "false"
+                    else:
+                            flag_s = flag.name.lower().replace("_", "-")
+                            # The state is ignored in _matrix_flag_converter
+                            # this'll need to change when that does.
+                            state = "false"
+
+                    lines.append("{}: {} {}".format(
+                        flag_s, host, state,
+                    ))
+
+    for origin in rules.matrix_rules:
+            for dest in rules.matrix_rules[origin]:
+                    for res_type in rules.matrix_rules[origin][dest]:
+                            action = rules.matrix_rules[origin][dest][res_type]
+                            if res_type == rule.Type.ALL:
+                                    res_type_s = "*"
+                            else:
+                                    res_type_s = res_type.name.lower()
+                            lines.append("{} {} {} {}".format(
+                                    origin, dest, res_type_s, action.name.lower()
+                            ))
+
+    return "\n".join(lines)

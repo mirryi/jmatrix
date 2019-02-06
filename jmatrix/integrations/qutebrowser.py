@@ -52,6 +52,14 @@ def jmatrix_read_config():
 	with open(JMATRIX_CONFIG, "r") as f:
 		jmatrix.ublock_parser.rules_to_map(f, JMATRIX_RULES)
 
+@cmdutils.register()
+def jmatrix_write_config():
+	"""Write out current rules."""
+	# This will strip out the "ignored" values in the default config.
+	text = jmatrix.ublock_parser.map_to_rules(JMATRIX_RULES)
+	with open(JMATRIX_CONFIG, "w") as f:
+		f.write(text)
+
 # Read back config
 jmatrix_read_config()
 
