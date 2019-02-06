@@ -11,4 +11,4 @@ profile:
 	./scripts/run_profile.py --profile-tool kcachegrind --profile-test tests/test_perf.py
 
 mypy:
-	mypy jmatrix
+	mypy jmatrix --strict

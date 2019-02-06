@@ -86,11 +86,11 @@ RULE_MATRIX_TYPE = typing.Dict[str, typing.Dict[str, typing.Dict[Type, Action]]]
 RULE_MATRIX_FLAGS_TYPE = typing.Dict[str, typing.Set[Flag]]
 
 class Rules():
-	def __init__(self):
+	def __init__(self) -> None:
 		self.matrix_flags = collections.defaultdict(set)  # type: RULE_MATRIX_FLAGS_TYPE
 		# buckle up, we're going on a ride.
 		self.matrix_rules = (
-			collections.defaultdict(
+			collections.defaultdict(  # type: ignore
 				functools.partial(
 					collections.defaultdict,
 					functools.partial(

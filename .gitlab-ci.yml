@@ -28,4 +28,4 @@ test:
 
 mypy:
   script:
-    - mypy jmatrix
+    - mypy jmatrix --strict

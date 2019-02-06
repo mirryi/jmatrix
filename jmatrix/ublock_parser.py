@@ -21,7 +21,7 @@ from jmatrix import rule
 class JMatrixParserError(ValueError):
 	pass
 
-def _rule_converter(d: str, r: str, rules: rule.Rules):
+def _rule_converter(d: str, r: str, rules: rule.Rules) -> None:
 	split_rules = r.split()
 	if not (2 <= len(split_rules) <= 4):
 		raise JMatrixParserError("Incorrect number of rules to: {}.".format(r))
@@ -49,7 +49,7 @@ def _rule_converter(d: str, r: str, rules: rule.Rules):
 		raise JMatrixParserError("Incorrect request type value to {}.".format(r))
 	rules.matrix_rules[source_hostname][dest_hostname][request_type] = action_value
 
-def _matrix_off_converter(d: str, r: str, rules: rule.Rules):
+def _matrix_off_converter(d: str, r: str, rules: rule.Rules) -> None:
 	split_rules = r.split()
 	if len(split_rules) != 2:
 		raise JMatrixParserError("Incorrect number of rules to {}.".format(r))
@@ -62,7 +62,7 @@ def _matrix_off_converter(d: str, r: str, rules: rule.Rules):
 		raise JMatrixParserError("Incorrect boolean values to {}.".format(r))
 	rules.matrix_flags[source_hostname].add(state_val)
 
-def _matrix_flag_converter(d: str, r: str, rules: rule.Rules):
+def _matrix_flag_converter(d: str, r: str, rules: rule.Rules) -> None:
 	split_rules = r.split()
 	if len(split_rules) != 2:
 		raise JMatrixParserError("Incorrect number of rules to {}.".format(r))
@@ -84,7 +84,7 @@ RULE_TO_CONVERTER = {
 }
 
 
-def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules):
+def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules) -> None:
 	"""Convert uMatrix rules into jmatrix lists."""
 	for r in rule_lines:
 		# Remove comments
