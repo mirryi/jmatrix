@@ -31,7 +31,7 @@ def _generate_widened_hostnames(hostname: str) -> typing.Iterator[str]:
 	yield '*'
 
 @functools.lru_cache(maxsize=2**8)
-def _hostname_widen_list(hostname: str) -> typing.Tuple[str]:
+def _hostname_widen_list(hostname: str) -> typing.Tuple[str, ...]:
 	"""An list generator which widens a hostname.
 
 	eg: a.b.com -> b.com -> com
@@ -49,7 +49,7 @@ def _get_first_party_domain(host: str) -> str:
 	return host
 
 def _evaluate_cell_z(
-		src_hostname: typing.List[str], request_hostname: str,
+		src_hostname: typing.Sequence[str], request_hostname: str,
 		request_type: rule.Type, rules: rule.Rules) -> typing.Optional[rule.Action]:
 	for hostname in src_hostname:
 		r1 = rules.matrix_rules.get(hostname, None)
