@@ -86,9 +86,15 @@ RULE_MATRIX_TYPE = typing.Dict[str, typing.Dict[str, typing.Dict[Type, Action]]]
 RULE_MATRIX_FLAGS_TYPE = typing.Dict[str, typing.Set[Flag]]
 
 class Rules():
+
+	"""All rules for the interceptor."""
+
 	def __init__(self) -> None:
+		#: Flags which apply to first party domains.
 		self.matrix_flags = collections.defaultdict(set)  # type: RULE_MATRIX_FLAGS_TYPE
 		# buckle up, we're going on a ride.
+		#: Rules for which resources to block/allow.
+		#: Nested dicts that look like {origin: {dest: {Type: Action}}}
 		self.matrix_rules = (
 			collections.defaultdict(  # type: ignore
 				functools.partial(
