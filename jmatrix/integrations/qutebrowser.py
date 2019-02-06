@@ -23,7 +23,9 @@ import jmatrix.rule, jmatrix.ublock_parser, jmatrix.interceptor
 
 from PyQt5.QtCore import QUrl
 
-from qutebrowser.api import interceptor, cmdutils, message
+from qutebrowser.api import interceptor, cmdutils, message, apitypes
+from qutebrowser.completion.models import completionmodel, listcategory
+from qutebrowser.utils import objreg
 
 from qutebrowser.config.configfiles import ConfigAPI  # noqa: F401
 from qutebrowser.config.config import ConfigContainer # noqa: F401
@@ -64,6 +66,8 @@ QUTEBROWSER_JMATRIX_MAPPING = {
 	interceptor.ResourceType.SUB_FRAME: jmatrix.rule.Type.FRAME,
 }
 
+SEEN_REQUESTS = jmatrix.rule.Rules()
+
 def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 	request_type = info.resource_type
 	# Never blacklist main navigation (should this be changed?)
@@ -81,11 +85,49 @@ def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 	request_host = info.request_url.host()
 
 	jmatrix_type = QUTEBROWSER_JMATRIX_MAPPING.get(request_type, jmatrix.rule.Type.OTHER)
-	if jmatrix.interceptor.should_block(
+	block = jmatrix.interceptor.should_block(
 			context_host, context_scheme,
 			request_host, request_scheme,
-			jmatrix_type, JMATRIX_RULES):
+			jmatrix_type, JMATRIX_RULES)
+	if block:
 		info.block()
 
+	SEEN_REQUESTS.matrix_rules[context_host][request_host][jmatrix_type] = \
+		jmatrix.rule.Action.BLOCK if block else jmatrix.rule.Action.ALLOW
 
 interceptor.register(_jmatrix_intercept_request)
+
+def _get_rules_completion(*args, info):
+	tab = objreg.get('tab', scope='tab', window=info.win_id, tab='current')
+	model = completionmodel.CompletionModel(column_widths=(100,))
+	entries = [
+		("{:10}{:10}{}".format(action.name, res_type.name.lower(), dest),) for
+		dest, types in SEEN_REQUESTS.matrix_rules[tab.url().host()].items() for
+		res_type, action in types.items()
+	]
+	cat = listcategory.ListCategory("Requests", entries)
+	model.add_category(cat)
+	return model
+
+@cmdutils.register()
+@cmdutils.argument("rule", completion=_get_rules_completion)
+@cmdutils.argument("tab", value=cmdutils.Value.cur_tab)
+def jmatrix_toggle_rule(tab: apitypes.Tab, rule: str):
+	"""View request types made on this page and block/allow them."""
+	try:
+		action, res_type, dest = rule.split()
+	except ValueError:
+		raise cmdutils.CommandError(
+			"Expected input of the form \"block/allow request_type "
+			"destination_host\""
+		)
+	if action.upper() == "BLOCK":
+		action = jmatrix.rule.Action.ALLOW
+	else:
+		action = jmatrix.rule.Action.BLOCK
+	res_type = jmatrix.rule.Type[res_type.upper()]
+	origin = tab.url().host()
+	JMATRIX_RULES.matrix_rules[origin][dest][res_type] = action
+	# Change our seen requests to match so it'll show up in the completion
+	# without having to reload the page.
+	SEEN_REQUESTS.matrix_rules[origin][dest][res_type] = action
