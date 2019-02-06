@@ -30,7 +30,7 @@ def _generate_widened_hostnames(hostname: str) -> typing.Iterator[str]:
 		hostname = hostname.partition(".")[-1]
 	yield '*'
 
-@functools.lru_cache(maxsize=2**7)
+@functools.lru_cache(maxsize=2**8)
 def _hostname_widen_list(hostname: str) -> typing.Tuple[str]:
 	"""An list generator which widens a hostname.
 
@@ -39,7 +39,8 @@ def _hostname_widen_list(hostname: str) -> typing.Tuple[str]:
 	return tuple(_generate_widened_hostnames(hostname))
 
 IP_ADDR_NAIVE = re.compile(r'^\d+\.\d+\.\d+\.\d+$|^\[[\da-zA-Z:]+\]$')
-# TODO should we cache this?
+
+@functools.lru_cache(maxsize=2**8)
 def _get_first_party_domain(host: str) -> str:
 	"""Get the part of a url to compare 'first party' domains."""
 	# TODO we should probably use the public suffix list here, instead of assuming TLD is 1 block
