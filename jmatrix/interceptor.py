@@ -16,23 +16,27 @@
 
 """Functions to determine if a request should be blocked or not."""
 
+import functools
 import itertools
 import typing
 import re
 
 from jmatrix import rule
 
-def _hostname_widen_list(hostname: str) -> typing.List[str]:
+def _generate_widened_hostnames(hostname: str) -> typing.Iterator[str]:
+	"""A generator for widening hostnames."""
+	while hostname:
+		yield hostname
+		hostname = hostname.partition(".")[-1]
+	yield '*'
+
+@functools.lru_cache(maxsize=2**7)
+def _hostname_widen_list(hostname: str) -> typing.Tuple[str]:
 	"""An list generator which widens a hostname.
 
 	eg: a.b.com -> b.com -> com
 	"""
-	l = []
-	while hostname:
-		l.append(hostname)
-		hostname = hostname.partition(".")[-1]
-	l.append('*')
-	return l
+	return tuple(_generate_widened_hostnames(hostname))
 
 IP_ADDR_NAIVE = re.compile(r'^\d+\.\d+\.\d+\.\d+$|^\[[\da-zA-Z:]+\]$')
 # TODO should we cache this?

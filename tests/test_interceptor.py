@@ -20,11 +20,11 @@ from jmatrix import interceptor, rule, ublock_parser
 
 
 WIDEN_TESTS = {
-	"a.b.com": ["a.b.com", "b.com", "com", "*"],
-	"start.duckduckgo.com": ["start.duckduckgo.com", "duckduckgo.com", "com", "*"],
-	"": ["*"],
-	"a.b.c.d.e.f": ["a.b.c.d.e.f", "b.c.d.e.f",
-					"c.d.e.f", "d.e.f", "e.f", "f", "*"],
+	"a.b.com": ("a.b.com", "b.com", "com", "*"),
+	"start.duckduckgo.com": ("start.duckduckgo.com", "duckduckgo.com", "com", "*"),
+	"": ("*",),
+	"a.b.c.d.e.f": ("a.b.c.d.e.f", "b.c.d.e.f",
+					"c.d.e.f", "d.e.f", "e.f", "f", "*"),
 }
 
 
