@@ -75,7 +75,9 @@ def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules) -> None:
 		directive = directive.lower().strip()
 		line = line.strip()
 		if directive not in RULE_TO_CONVERTER:
-			print("[jmatrix]: rule '{}' ignored!".format(directive))
+			# TODO come up with better way to output this if needed.
+			# print("[jmatrix]: rule '{}' ignored!".format(directive))
+			pass
 		else:
 			RULE_TO_CONVERTER[directive](directive, line.strip(), rules)
 
