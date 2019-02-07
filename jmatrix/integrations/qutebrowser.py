@@ -21,8 +21,6 @@ import os
 
 import jmatrix.rule, jmatrix.ublock_parser, jmatrix.interceptor
 
-from PyQt5.QtCore import QUrl
-
 from qutebrowser.api import interceptor, cmdutils, message, apitypes
 from qutebrowser.completion.models import completionmodel, listcategory
 from qutebrowser.utils import objreg
@@ -125,7 +123,11 @@ def _get_rules_completion(*args, info):
 @cmdutils.argument("rule", completion=_get_rules_completion)
 @cmdutils.argument("tab", value=cmdutils.Value.cur_tab)
 def jmatrix_toggle_rule(tab: apitypes.Tab, rule: str):
-	"""View request types made on this page and block/allow them."""
+	"""View request types made on this host and block/allow them.
+
+	Requests are collated based on the host of the URL, so you may see requests from other pages on the same host.
+
+	"""
 	try:
 		action, res_type, dest = rule.split()
 	except ValueError:
