@@ -35,7 +35,11 @@ c = c  # type: ConfigContainer # noqa: F821 pylint: disable=E0602,C0103
 
 
 
+# Used to actually decide if we should block a rule or not
 JMATRIX_RULES = jmatrix.rule.Rules()
+
+# Used to track requests that we have seen for purposes of completion
+SEEN_REQUESTS = jmatrix.rule.Rules()
 
 JMATRIX_CONFIG = config.configdir / "jmatrix-rules"
 
@@ -48,7 +52,9 @@ if not JMATRIX_CONFIG.exists():
 def jmatrix_read_config():
 	"""Overwrite internal config with the one in the jmatrix config file."""
 	global JMATRIX_RULES
+	global SEEN_REQUESTS
 	JMATRIX_RULES = jmatrix.rule.Rules()
+	SEEN_REQUESTS = jmatrix.rule.Rules()
 	with open(JMATRIX_CONFIG, "r") as f:
 		jmatrix.ublock_parser.rules_to_map(f, JMATRIX_RULES)
 
@@ -73,8 +79,6 @@ QUTEBROWSER_JMATRIX_MAPPING = {
 	interceptor.ResourceType.XHR: jmatrix.rule.Type.XHR,
 	interceptor.ResourceType.SUB_FRAME: jmatrix.rule.Type.FRAME,
 }
-
-SEEN_REQUESTS = jmatrix.rule.Rules()
 
 def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 	request_type = info.resource_type
