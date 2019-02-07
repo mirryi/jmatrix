@@ -65,14 +65,3 @@ def test_matrix_rule_serialize(r, result):
 	ublock_parser.rules_to_map([r], rule_obj)
 	lines = ublock_parser.map_to_rules(rule_obj)
 	assert lines == r
-
-
-@pytest.mark.parametrize(('r', 'result'), MATRIX_OFF_TESTS.items())
-def test_matrix_rule_serialize(r, result):
-	if "\t" in r:
-		# Serialization normalizes whitespace.
-		return
-	rule_obj = rule.Rules()
-	ublock_parser.rules_to_map([r], rule_obj)
-	lines = ublock_parser.map_to_rules(rule_obj)
-	assert lines == r
