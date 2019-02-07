@@ -59,6 +59,17 @@ https://github.com/gorhill/uMatrix/wiki/Rules-syntax
 	ALLOW = 2
 	INHERIT = 3
 
+	def __str__(self) -> str:
+		return self.name.lower()
+
+	@staticmethod
+	def from_str(s: str) -> typing.Optional['Action']:
+		"""Convert s to an Action.
+
+		Return None if s is not a valid Action"""
+		s = s.upper()
+		return Action.__members__.get(s, None)
+
 class Type(enum.Enum):
 	"""A uMatrix request type.
 
@@ -76,6 +87,24 @@ https://github.com/gorhill/uMatrix/wiki/Rules-syntax
 	FRAME = 8
 	OTHER = 9
 
+	def __str__(self) -> str:
+		if self == Type.ALL:
+			return '*'
+		return self.name.lower()
+
+	@staticmethod
+	def from_str(s: str) -> typing.Optional['Type']:
+		"""Convert s to a Type.
+
+		Return None if s is not a valid Type"""
+		s = s.upper()
+		if s == '*':
+			return Type.ALL
+		# https://github.com/gorhill/uMatrix/issues/759
+		elif s == 'PLUGIN':
+			return Type.MEDIA
+		return Type.__members__.get(s, None)
+
 class Flag(enum.Enum):
 	"""A uMatrix flag type (for matrix-off, https-strict, etc).
 
@@ -86,6 +115,17 @@ https://github.com/gorhill/uMatrix/wiki/Rules-syntax
 	"""
 	MATRIX_OFF = 1
 	HTTPS_STRICT = 2
+
+	def __str__(self) -> str:
+		return self.name.lower().replace('_', '-')
+
+	@staticmethod
+	def from_str(s: str) -> typing.Optional['Flag']:
+		"""Convert s to a Flag.
+
+		Return None if s is not a valid Flag"""
+		s = s.upper().replace('-', '_')
+		return Flag.__members__.get(s, None)
 
 RULE_MATRIX_TYPE = typing.Dict[str, typing.Dict[str, typing.Dict[Type, Action]]]
 RULE_MATRIX_FLAGS_TYPE = typing.Dict[str, typing.Dict[Flag, bool]]

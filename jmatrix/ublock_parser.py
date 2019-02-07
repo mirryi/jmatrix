@@ -30,22 +30,11 @@ def _rule_converter(d: str, r: str, rules: rule.Rules) -> None:
 	if len(split_rules) < 4:
 		split_rules.append('allow')
 	source_hostname, dest_hostname, rq_type, action = split_rules
-	action_mapping = rule.Action.__members__
-	action = action.upper()
-	if action in action_mapping:
-		action_value = action_mapping[action]
-	else:
+	action_value = rule.Action.from_str(action)
+	if action_value is None:
 		raise JMatrixParserError("Incorrect action values to {}.".format(r))
-	rq_type = rq_type.upper()
-	if rq_type == '*':
-		rq_type = "ALL"
-	# https://github.com/gorhill/uMatrix/issues/759
-	elif rq_type == 'PLUGIN':
-		rq_type = 'MEDIA'
-	type_mapping = rule.Type.__members__
-	if rq_type in type_mapping:
-		request_type = type_mapping[rq_type]
-	else:
+	request_type = rule.Type.from_str(rq_type)
+	if request_type is None:
 		raise JMatrixParserError("Incorrect request type value to {}.".format(r))
 	rules.matrix_rules[source_hostname][dest_hostname][request_type] = action_value
 
@@ -54,11 +43,8 @@ def _matrix_flag_converter(d: str, r: str, rules: rule.Rules) -> None:
 	if len(split_rules) != 2:
 		raise JMatrixParserError("Incorrect number of rules to {}.".format(r))
 	source_hostname, state = split_rules
-	state_mapping = rule.Flag.__members__
-	directive = d.upper().replace("-", "_")
-	if directive in state_mapping:
-		flag_val = state_mapping[directive]
-	else:
+	flag_val = rule.Flag.from_str(d)
+	if flag_val is None:
 		raise JMatrixParserError("Incorrect flag type to {}.".format(r))
 	state_bool = state.lower() == "true"
 	rules.matrix_flags[source_hostname][flag_val] = state_bool
@@ -109,10 +95,8 @@ def map_to_rules(rules: rule.Rules) -> str:
 		for dest in rules.matrix_rules[origin]:
 			for res_type in rules.matrix_rules[origin][dest]:
 				action = rules.matrix_rules[origin][dest][res_type]
-				if res_type == rule.Type.ALL:
-					res_type_s = "*"
-				else:
-					res_type_s = res_type.name.lower()
+				res_type_s = str(res_type)
+
 				lines.append("{} {} {} {}".format(
 						origin, dest, res_type_s, action.name.lower()
 				))
