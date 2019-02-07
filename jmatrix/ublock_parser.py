@@ -49,19 +49,6 @@ def _rule_converter(d: str, r: str, rules: rule.Rules) -> None:
 		raise JMatrixParserError("Incorrect request type value to {}.".format(r))
 	rules.matrix_rules[source_hostname][dest_hostname][request_type] = action_value
 
-def _matrix_off_converter(d: str, r: str, rules: rule.Rules) -> None:
-	split_rules = r.split()
-	if len(split_rules) != 2:
-		raise JMatrixParserError("Incorrect number of rules to {}.".format(r))
-	source_hostname, state = split_rules
-	state_mapping = rule.Flag.__members__
-	state = state.upper()
-	if state in state_mapping:
-		state_val = state_mapping[state]
-	else:
-		raise JMatrixParserError("Incorrect boolean values to {}.".format(r))
-	rules.matrix_flags[source_hostname].add(state_val)
-
 def _matrix_flag_converter(d: str, r: str, rules: rule.Rules) -> None:
 	split_rules = r.split()
 	if len(split_rules) != 2:
@@ -72,14 +59,15 @@ def _matrix_flag_converter(d: str, r: str, rules: rule.Rules) -> None:
 	if directive in state_mapping:
 		flag_val = state_mapping[directive]
 	else:
-		raise JMatrixParserError("Incorrect boolean values to {}.".format(r))
-	rules.matrix_flags[source_hostname].add(flag_val)
+		raise JMatrixParserError("Incorrect flag type to {}.".format(r))
+	state_bool = state.lower() == "true"
+	rules.matrix_flags[source_hostname][flag_val] = state_bool
 
 
 # A mapping from uMatrix rule directives to converter functions
 RULE_TO_CONVERTER = {
 	"rule": _rule_converter,
-	"matrix-off": _matrix_off_converter,
+	"matrix-off": _matrix_flag_converter,
 	"https-strict": _matrix_flag_converter,
 }
 
@@ -107,36 +95,26 @@ def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules) -> None:
 
 
 def map_to_rules(rules: rule.Rules) -> str:
-    """Convert jmatrix rules to uMatrix compatible text."""
-    lines = []
-    for host, flags in rules.matrix_flags.items():
-            for flag in flags:
-                    if flag == rule.Flag.TRUE:
-                            flag_s = "matrix-off"
-                            state = "true"
-                    elif flag == rule.Flag.FALSE:
-                            flag_s = "matrix-off"
-                            state = "false"
-                    else:
-                            flag_s = flag.name.lower().replace("_", "-")
-                            # The state is ignored in _matrix_flag_converter
-                            # this'll need to change when that does.
-                            state = "false"
+	"""Convert jmatrix rules to uMatrix compatible text."""
+	lines = []
+	for host, flags in rules.matrix_flags.items():
+		for flag, state_b in flags.items():
+			flag_s = flag.name.lower().replace('_', '-')
+			state = str(state_b).lower()
+			lines.append("{}: {} {}".format(
+				flag_s, host, state,
+			))
 
-                    lines.append("{}: {} {}".format(
-                        flag_s, host, state,
-                    ))
+	for origin in rules.matrix_rules:
+		for dest in rules.matrix_rules[origin]:
+			for res_type in rules.matrix_rules[origin][dest]:
+				action = rules.matrix_rules[origin][dest][res_type]
+				if res_type == rule.Type.ALL:
+					res_type_s = "*"
+				else:
+					res_type_s = res_type.name.lower()
+				lines.append("{} {} {} {}".format(
+						origin, dest, res_type_s, action.name.lower()
+				))
 
-    for origin in rules.matrix_rules:
-            for dest in rules.matrix_rules[origin]:
-                    for res_type in rules.matrix_rules[origin][dest]:
-                            action = rules.matrix_rules[origin][dest][res_type]
-                            if res_type == rule.Type.ALL:
-                                    res_type_s = "*"
-                            else:
-                                    res_type_s = res_type.name.lower()
-                            lines.append("{} {} {} {}".format(
-                                    origin, dest, res_type_s, action.name.lower()
-                            ))
-
-    return "\n".join(lines)
+	return "\n".join(lines)

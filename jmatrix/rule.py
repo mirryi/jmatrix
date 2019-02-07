@@ -77,20 +77,18 @@ https://github.com/gorhill/uMatrix/wiki/Rules-syntax
 	OTHER = 9
 
 class Flag(enum.Enum):
-	"""A uMatrix flag (for matrix-off, https-strict, etc).
+	"""A uMatrix flag type (for matrix-off, https-strict, etc).
 
 Defined formally in the uMatrix rule documentation.
 
 https://github.com/gorhill/uMatrix/wiki/Rules-syntax
 
 	"""
-	# TRUE means matrix is OFF, not on!
-	TRUE = 1
-	FALSE = 2
-	HTTPS_STRICT = 3
+	MATRIX_OFF = 1
+	HTTPS_STRICT = 2
 
 RULE_MATRIX_TYPE = typing.Dict[str, typing.Dict[str, typing.Dict[Type, Action]]]
-RULE_MATRIX_FLAGS_TYPE = typing.Dict[str, typing.Set[Flag]]
+RULE_MATRIX_FLAGS_TYPE = typing.Dict[str, typing.Dict[Flag, bool]]
 
 class Rules():
 
@@ -98,7 +96,7 @@ class Rules():
 
 	def __init__(self) -> None:
 		#: Flags which apply to first party domains.
-		self.matrix_flags = collections.defaultdict(set)  # type: RULE_MATRIX_FLAGS_TYPE
+		self.matrix_flags = collections.defaultdict(dict)  # type: RULE_MATRIX_FLAGS_TYPE
 		# buckle up, we're going on a ride.
 		#: Rules for which resources to block/allow.
 		#: Nested dicts that look like {origin: {dest: {Type: Action}}}

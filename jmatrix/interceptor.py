@@ -75,13 +75,13 @@ def should_block(
 	# First check if we have a matrix-off rule
 	context_scheme += "-scheme"
 	if (any(map(
-			lambda host: rule.Flag.TRUE in rules.matrix_flags.get(host, []),
+			lambda host: rules.matrix_flags.get(host, {}).get(rule.Flag.MATRIX_OFF, False),
 			itertools.chain(widened_context, [context_scheme])))):
 		# We should be off for this context
 		return False
 
 	if (any(map(
-			lambda host: rule.Flag.HTTPS_STRICT in rules.matrix_flags.get(host, []),
+			lambda host: rules.matrix_flags.get(host, {}).get(rule.Flag.HTTPS_STRICT, False),
 			itertools.chain(widened_context, [context_scheme])))):
 		# We are being strict on https, block if needed
 		if is_https and request_scheme != "https":
