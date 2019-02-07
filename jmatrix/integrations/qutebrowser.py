@@ -133,7 +133,12 @@ def jmatrix_toggle_rule(tab: apitypes.Tab, rule: str):
 		action = jmatrix.rule.Action.ALLOW
 	else:
 		action = jmatrix.rule.Action.BLOCK
-	res_type = jmatrix.rule.Type[res_type.upper()]
+	if res_type == '*':
+		res_type = "ALL"
+	try:
+		res_type = jmatrix.rule.Type[res_type.upper()]
+	except KeyError:
+		message.error("Type '{}' not recognized".format(res_type))
 	origin = tab.url().host()
 	JMATRIX_RULES.matrix_rules[origin][dest][res_type] = action
 	# Change our seen requests to match so it'll show up in the completion
