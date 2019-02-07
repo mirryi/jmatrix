@@ -18,6 +18,13 @@ import typing
 import collections
 import functools
 
+JMATRIX_HEADER = """# WARNING: This file can be overwritten easily with the :jmatrix-write-rules command
+# When data is overwritten, formatting and comments will be lost.
+# Please exercise caution when editing this file directly, and make sure to keep backups.
+
+
+"""
+
 DEFAULT_RULES = """
 https-strict: behind-the-scene false
 matrix-off: about-scheme true

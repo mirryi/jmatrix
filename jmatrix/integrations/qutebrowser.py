@@ -42,7 +42,7 @@ JMATRIX_CONFIG = config.configdir / "jmatrix-rules"
 if not JMATRIX_CONFIG.exists():
 	# Create the file with the default config
 	with open(JMATRIX_CONFIG, "w") as f:
-		f.write(jmatrix.rule.DEFAULT_RULES)
+		f.write(jmatrix.rule.JMATRIX_HEADER + jmatrix.rule.DEFAULT_RULES)
 
 @cmdutils.register()
 def jmatrix_read_config():
@@ -58,7 +58,7 @@ def jmatrix_write_config():
 	# This will strip out the "ignored" values in the default config.
 	text = jmatrix.ublock_parser.map_to_rules(JMATRIX_RULES)
 	with open(JMATRIX_CONFIG, "w") as f:
-		f.write(text)
+		f.write(jmatrix.rule.JMATRIX_HEADER + text)
 
 # Read back config
 jmatrix_read_config()
