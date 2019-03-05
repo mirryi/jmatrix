@@ -70,18 +70,18 @@ jmatrix_read_config()
 # Unsupported matrix rules:
 # - cookie
 QUTEBROWSER_JMATRIX_MAPPING = {
-	interceptor.ResourceType.STYLESHEET: jmatrix.rule.Type.CSS,
-	interceptor.ResourceType.IMAGE: jmatrix.rule.Type.IMAGE,
-	interceptor.ResourceType.MEDIA: jmatrix.rule.Type.MEDIA,
-	interceptor.ResourceType.SCRIPT: jmatrix.rule.Type.SCRIPT,
-	interceptor.ResourceType.XHR: jmatrix.rule.Type.XHR,
-	interceptor.ResourceType.SUB_FRAME: jmatrix.rule.Type.FRAME,
+	interceptor.ResourceType.stylesheet: jmatrix.rule.Type.CSS,
+	interceptor.ResourceType.image: jmatrix.rule.Type.IMAGE,
+	interceptor.ResourceType.media: jmatrix.rule.Type.MEDIA,
+	interceptor.ResourceType.script: jmatrix.rule.Type.SCRIPT,
+	interceptor.ResourceType.xhr: jmatrix.rule.Type.XHR,
+	interceptor.ResourceType.sub_frame: jmatrix.rule.Type.FRAME,
 }
 
 def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 	request_type = info.resource_type
 	# Never blacklist main navigation (should this be changed?)
-	if (request_type == interceptor.ResourceType.MAIN_FRAME or
+	if (request_type == interceptor.ResourceType.main_frame or
 		# If we are already blocked, don't waste our time here.
 		info.is_blocked):
 		return
