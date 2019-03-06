@@ -71,7 +71,7 @@ def should_block(
 	"""Check if we should block a certain url."""
 
 	# Only using context against matrix_flags, remove irrelevant entries
-	widened_context = list(filter(
+	widened_context = tuple(filter(
 		functools.partial(operator.contains, rules.matrix_flags),
 		_hostname_widen_list(context_hostname)))
 	widened_request = _hostname_widen_list(request_hostname)
@@ -93,7 +93,7 @@ def should_block(
 			return True
 
 	# Only using context against matrix_rules, remove irrelevant entries
-	widened_context = list(filter(
+	widened_context = tuple(filter(
 		functools.partial(operator.contains, rules.matrix_rules),
 		_hostname_widen_list(context_hostname)))
 
