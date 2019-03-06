@@ -20,6 +20,7 @@ import functools
 import itertools
 import typing
 import re
+import operator
 
 from jmatrix import rule
 
@@ -68,7 +69,11 @@ def should_block(
 		request_hostname: str, request_scheme: str,
 		request_type: rule.Type, rules: rule.Rules) -> bool:
 	"""Check if we should block a certain url."""
-	widened_context = _hostname_widen_list(context_hostname)
+
+	# Only using context against matrix_flags, remove irrelevant entries
+	widened_context = list(filter(
+		functools.partial(operator.contains, rules.matrix_flags),
+		_hostname_widen_list(context_hostname)))
 	widened_request = _hostname_widen_list(request_hostname)
 	is_https = context_scheme == "https"
 
@@ -86,6 +91,11 @@ def should_block(
 		# We are being strict on https, block if needed
 		if is_https and request_scheme != "https":
 			return True
+
+	# Only using context against matrix_rules, remove irrelevant entries
+	widened_context = list(filter(
+		functools.partial(operator.contains, rules.matrix_rules),
+		_hostname_widen_list(context_hostname)))
 
 	# uMatrix dosen't have any simple rules to it's precedence. Because of this, we just follow the algorithm defined in:
 	#
