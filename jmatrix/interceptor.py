@@ -53,13 +53,13 @@ def _evaluate_cell_z(
 		src_hostname: typing.Sequence[str], request_hostname: str,
 		request_type: rule.Type, rules: rule.Rules) -> typing.Optional[rule.Action]:
 	for hostname in src_hostname:
-		r1 = rules.matrix_rules.get(hostname, None)
+		r1 = rules.matrix_rules.get(hostname)
 		if r1 is None:
 			continue
-		r2 = r1.get(request_hostname, None)
+		r2 = r1.get(request_hostname)
 		if r2 is None:
 			continue
-		r3 = r2.get(request_type, None)
+		r3 = r2.get(request_type)
 		if r3 is not None:
 			return r3
 	return None
