@@ -28,4 +28,4 @@ test:
 
 mypy:
   script:
-    - mypy jmatrix --strict
+    - mypy jmatrix --strict --allow-redefinition
