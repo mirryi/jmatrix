@@ -63,10 +63,7 @@ unstable api's. That means this is prone to break at any time, and you may
 get qutebrowser crashes.
 
 If you are installing into qutebrowser, you already have all the needed
-dependencies. The tricky bit is getting the correct version of qutebrowser to
-use this. We depend heavily on knowing what resource type a request is, which
-isn't implemented on master yet. If you'd like to try this out, please apply the
-patch in [[https://github.com/qutebrowser/qutebrowser/pull/4525][this pull request]] to get that feature on qtwebengine.
+dependencies, assuming you are using the version from git master.
 
 Once you are completely set up with that, place this repo in your config dir,
 and add this to your ~config.py~.
