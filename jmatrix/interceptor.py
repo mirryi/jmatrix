@@ -50,13 +50,15 @@ def _get_first_party_domain(host: str) -> str:
 	return host
 
 def _evaluate_cell_z(
-		src_hostname: typing.Sequence[str], request_hostname: str,
+		src_hostname_map: typing.Iterable[typing.Dict[str, typing.Dict[rule.Type, rule.Action]]],
+		request_hostname: str,
 		request_type: rule.Type, rules: rule.Rules) -> typing.Optional[rule.Action]:
-	for hostname in src_hostname:
-		r1 = rules.matrix_rules.get(hostname)
-		if r1 is None:
-			continue
-		r2 = r1.get(request_hostname)
+	"""Index into a cell in the matrix.
+
+	src_hostname_map are 1st level entries present in rules.matrix_rules
+	(this helps improve performance)"""
+	for hostname_map in src_hostname_map:
+		r2 = hostname_map.get(request_hostname)
 		if r2 is None:
 			continue
 		r3 = r2.get(request_type)
@@ -94,8 +96,9 @@ def should_block(
 
 	# Only using context against matrix_rules, remove irrelevant entries
 	widened_context = tuple(filter(
-		functools.partial(operator.contains, rules.matrix_rules),
-		_hostname_widen_list(context_hostname)))
+		None,
+		map(rules.matrix_rules.get,
+			_hostname_widen_list(context_hostname))))
 
 	# uMatrix dosen't have any simple rules to it's precedence. Because of this, we just follow the algorithm defined in:
 	#
