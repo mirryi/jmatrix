@@ -69,8 +69,11 @@ def _evaluate_cell_z(
 def should_block(
 		context_hostname: str, context_scheme: str,
 		request_hostname: str, request_scheme: str,
-		request_type: rule.Type, rules: rule.Rules) -> bool:
-	"""Check if we should block a certain url."""
+		request_type: rule.Type, fpdomain_fn: typing.Callable[[str], str],
+		rules: rule.Rules) -> bool:
+	"""Check if we should block a certain url.
+
+	fpdomain_fn: A function that will take hostnames and return a 'first party' version of them."""
 
 	# Only using context against matrix_flags, remove irrelevant entries
 	widened_context = tuple(filter(
@@ -114,8 +117,8 @@ def should_block(
 	if r == rule.Action.BLOCK: return True
 
 	dest = request_hostname
-	first_party_domain = _get_first_party_domain(request_hostname)
-	if (_get_first_party_domain(context_hostname) != first_party_domain):
+	first_party_domain = fpdomain_fn(request_hostname)
+	if (fpdomain_fn(context_hostname) != first_party_domain):
 		first_party_domain = ""
 
 	# Ancestor cells up to 1st-party request domain

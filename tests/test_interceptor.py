@@ -17,6 +17,7 @@ import pytest
 import functools
 
 from jmatrix import interceptor, rule, ublock_parser
+from jmatrix.vendor.fpdomain import fpdomain
 
 
 WIDEN_TESTS = {
@@ -167,26 +168,33 @@ OVERALL_TESTS = {
 		("super.qutebrowser.org", "https", "super.qutebrowser.org", "http", rule.Type.CSS),],},
 }
 
+PSL = None
+@pytest.fixture(scope="session")
+def psl():
+	global PSL
+	PSL = fpdomain.PSL()
+	return PSL.fp_domain
 
 @pytest.mark.parametrize(('r_text', 'result'), OVERALL_TESTS.items())
-def test_matrix_overall(r_text, result):
+def test_matrix_overall(r_text, result, psl):
 	rule_obj = rule.Rules()
 	ublock_parser.rules_to_map(r_text, rule_obj)
 	for blocked_rule in result.get('block', []):
-		args = blocked_rule + (rule_obj,)
+		args = blocked_rule + (psl, rule_obj)
 		assert interceptor.should_block(*args)
 	for passed_rule in result.get('allow', []):
-		args = passed_rule + (rule_obj,)
+		args = passed_rule + (psl, rule_obj,)
 		assert not interceptor.should_block(*args)
 
 
-def test_benchmark_null_match(benchmark):
+def test_benchmark_null_match(psl, benchmark):
 	"""Benchmarks the most complicated (ironically) match, the null match."""
 	rule_obj = rule.Rules()
 	ublock_parser.rules_to_map(["* * * block"], rule_obj)
 	benchmark(functools.partial(
 		interceptor.should_block,
-		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", "http", rule.Type.FRAME, rule_obj))
+		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", "http",
+		rule.Type.FRAME, psl, rule_obj))
 
 @pytest.fixture(scope="session")
 def stock_rules():
@@ -194,19 +202,21 @@ def stock_rules():
 		lines = f.readlines()
 	return lines
 
-def test_benchmark_complex_null_match(stock_rules, benchmark):
+def test_benchmark_complex_null_match(stock_rules, psl, benchmark):
 	"""Benchmarks the null match with lots of extra rules."""
 	rule_obj = rule.Rules()
 	ublock_parser.rules_to_map(stock_rules, rule_obj)
 	benchmark(functools.partial(
 		interceptor.should_block,
-		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", "http", rule.Type.FRAME, rule_obj))
+		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", "http",
+		rule.Type.FRAME, psl, rule_obj))
 
-def test_benchmark_complex_block(stock_rules, benchmark):
+def test_benchmark_complex_block(stock_rules, psl, benchmark):
 	"""Benchmarks a particularly slow match I found."""
 	rule_obj = rule.Rules()
 	ublock_parser.rules_to_map(stock_rules, rule_obj)
 	# http://www.redditstatic.com/desktop2x/fonts/IBMPlexSans/Regular-e6bbcdd30d3bd4d6b170bcb6d3552cab.woff
 	benchmark(functools.partial(
 		interceptor.should_block,
-		"www.redditstatic.com", "http", "www.reddit.com", "http", rule.Type.OTHER, rule_obj))
+		"www.redditstatic.com", "http", "www.reddit.com", "http",
+		rule.Type.OTHER, psl, rule_obj))

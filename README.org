@@ -44,9 +44,7 @@ test_benchmark_null_match             14.4300 (1.58)     48.9900 (2.25)     14.8
 * Correctness
 
 I lifted the matching algorithm almost entirely from uMatrix (since it has a very
-weird hierarchy that was not easy to replicate without it). The logic for
-determining first-party hosts is currently a little questionable, uMatrix uses
-the [[https://github.com/gorhill/publicsuffixlist.js][public suffix list]], but I'm just assuming the tld is one block long.
+weird hierarchy that was not easy to replicate without it).
 
 If you find an issue, please report it!
 

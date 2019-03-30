@@ -19,6 +19,7 @@
 import sys, os, time
 
 import jmatrix.rule, jmatrix.ublock_parser, jmatrix.interceptor
+from jmatrix.vendor.fpdomain import fpdomain
 
 from qutebrowser.api import interceptor, cmdutils, message, apitypes
 from qutebrowser.completion.models import completionmodel, listcategory
@@ -31,14 +32,17 @@ config = config  # type: ConfigAPI # noqa: F821 pylint: disable=E0602,C0103
 c = c  # type: ConfigContainer # noqa: F821 pylint: disable=E0602,C0103
 
 
-
 # Used to actually decide if we should block a rule or not
 JMATRIX_RULES = jmatrix.rule.Rules()
 
 # Used to track requests that we have seen for purposes of completion
 SEEN_REQUESTS = jmatrix.rule.Rules()
 
+# Used to handle first party domains
+PSL = None
+
 JMATRIX_CONFIG = config.configdir / "jmatrix-rules"
+PSL_FILE = config.datadir / "psl"
 
 if not JMATRIX_CONFIG.exists():
 	# Create the file with the default config
@@ -46,17 +50,19 @@ if not JMATRIX_CONFIG.exists():
 		f.write(jmatrix.rule.JMATRIX_HEADER + jmatrix.rule.DEFAULT_RULES)
 
 @cmdutils.register()
-def jmatrix_read_config():
+def jmatrix_read_config() -> None:
 	"""Overwrite internal config with the one in the jmatrix config file."""
 	global JMATRIX_RULES
 	global SEEN_REQUESTS
+	global PSL
 	JMATRIX_RULES = jmatrix.rule.Rules()
 	SEEN_REQUESTS = jmatrix.rule.Rules()
 	with open(JMATRIX_CONFIG, "r") as f:
 		jmatrix.ublock_parser.rules_to_map(f, JMATRIX_RULES)
+	PSL = fpdomain.PSL(PSL_FILE)
 
 @cmdutils.register()
-def jmatrix_write_config():
+def jmatrix_write_config() -> None:
 	"""Write out current rules."""
 	# This will strip out the "ignored" values in the default config.
 	text = jmatrix.ublock_parser.map_to_rules(JMATRIX_RULES)
@@ -95,9 +101,9 @@ def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 
 	jmatrix_type = QUTEBROWSER_JMATRIX_MAPPING.get(request_type, jmatrix.rule.Type.OTHER)
 	block = jmatrix.interceptor.should_block(
-			context_host, context_scheme,
-			request_host, request_scheme,
-			jmatrix_type, JMATRIX_RULES)
+		context_host, context_scheme,
+		request_host, request_scheme,
+		jmatrix_type, PSL.fp_domain, JMATRIX_RULES)
 	if block:
 		info.block()
 
