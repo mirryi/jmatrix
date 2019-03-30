@@ -12,3 +12,6 @@ profile:
 
 mypy:
 	mypy jmatrix --strict --allow-redefinition
+
+update-vendor:
+	git subtree pull --prefix jblock/vendor/fpdomain fpdomain vendor --squash
