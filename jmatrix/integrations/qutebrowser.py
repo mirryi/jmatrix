@@ -28,6 +28,8 @@ from qutebrowser.utils import objreg
 from qutebrowser.config.configfiles import ConfigAPI  # noqa: F401
 from qutebrowser.config.config import ConfigContainer # noqa: F401
 
+from qutebrowser.misc import editor
+
 config = config  # type: ConfigAPI # noqa: F821 pylint: disable=E0602,C0103
 c = c  # type: ConfigContainer # noqa: F821 pylint: disable=E0602,C0103
 
@@ -68,6 +70,31 @@ def jmatrix_write_config() -> None:
 	text = jmatrix.ublock_parser.map_to_rules(JMATRIX_RULES)
 	with open(JMATRIX_CONFIG, "w") as f:
 		f.write(jmatrix.rule.JMATRIX_HEADER + text)
+
+@cmdutils.register(instance='config-commands')
+def jmatrix_edit_config(self, no_source: bool = False) -> None:
+        """Open the jmatrix-rules file in the editor.
+
+        Args:
+            no_source: Don't re-source the rules file after editing.
+        """
+        def on_file_updated() -> None:
+            """Source the new config when editing finished.
+
+            """
+            try:
+                jmatrix_read_config()
+            except:
+                message.error("Unexpected error while reloading rules file. Check syntax?")
+
+        ed = editor.ExternalEditor(watch=True, parent=self._config)
+        if not no_source:
+            ed.file_updated.connect(on_file_updated)
+
+        filename = os.path.join(config.configdir, 'jmatrix-rules')
+        ed.edit_file(filename)
+
+
 
 # Read back config
 jmatrix_read_config()
