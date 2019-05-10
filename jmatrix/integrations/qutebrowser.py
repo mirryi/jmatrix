@@ -123,7 +123,9 @@ def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 	context_host = info.first_party_url.host()
 	context_scheme = info.first_party_url.scheme()
 	request_scheme = info.request_url.scheme()
-	if request_scheme == "blob":
+	# TODO sometimes the context url as well is a data url. This seems like a bug. We can't handle this case very well
+	# though, as we will most likely end up blocking this case. If there's a way to work-around this, we should.
+	if request_scheme in {"blob", "data"} or context_scheme in {"blob", "data"}:
 		# These 'blob' urls don't seem to be actual requests, but internal chrome stuff
 		# Let them pass, since they aren't real requests and break things if we block them.
 		return
