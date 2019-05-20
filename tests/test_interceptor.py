@@ -16,7 +16,7 @@
 import pytest
 import functools
 
-from jmatrix import interceptor, rule, ublock_parser
+from jmatrix import interceptor, rule, umatrix_parser
 from jmatrix.vendor.fpdomain import fpdomain
 
 
@@ -178,7 +178,7 @@ def psl():
 @pytest.mark.parametrize(('r_text', 'result'), OVERALL_TESTS.items())
 def test_matrix_overall(r_text, result, psl):
 	rule_obj = rule.Rules()
-	ublock_parser.rules_to_map(r_text, rule_obj)
+	umatrix_parser.rules_to_map(r_text, rule_obj)
 	for blocked_rule in result.get('block', []):
 		args = blocked_rule + (psl, rule_obj)
 		assert interceptor.should_block(*args)
@@ -190,7 +190,7 @@ def test_matrix_overall(r_text, result, psl):
 def test_benchmark_null_match(psl, benchmark):
 	"""Benchmarks the most complicated (ironically) match, the null match."""
 	rule_obj = rule.Rules()
-	ublock_parser.rules_to_map(["* * * block"], rule_obj)
+	umatrix_parser.rules_to_map(["* * * block"], rule_obj)
 	benchmark(functools.partial(
 		interceptor.should_block,
 		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", "http",
@@ -205,7 +205,7 @@ def stock_rules():
 def test_benchmark_complex_null_match(stock_rules, psl, benchmark):
 	"""Benchmarks the null match with lots of extra rules."""
 	rule_obj = rule.Rules()
-	ublock_parser.rules_to_map(stock_rules, rule_obj)
+	umatrix_parser.rules_to_map(stock_rules, rule_obj)
 	benchmark(functools.partial(
 		interceptor.should_block,
 		"a.b.c.d.e.f.g", "http", "cdn.a.b.c.d.e.f.g", "http",
@@ -214,7 +214,7 @@ def test_benchmark_complex_null_match(stock_rules, psl, benchmark):
 def test_benchmark_complex_block(stock_rules, psl, benchmark):
 	"""Benchmarks a particularly slow match I found."""
 	rule_obj = rule.Rules()
-	ublock_parser.rules_to_map(stock_rules, rule_obj)
+	umatrix_parser.rules_to_map(stock_rules, rule_obj)
 	# http://www.redditstatic.com/desktop2x/fonts/IBMPlexSans/Regular-e6bbcdd30d3bd4d6b170bcb6d3552cab.woff
 	benchmark(functools.partial(
 		interceptor.should_block,

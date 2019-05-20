@@ -18,7 +18,7 @@
 
 import sys, os, time
 
-import jmatrix.rule, jmatrix.ublock_parser, jmatrix.interceptor
+import jmatrix.rule, jmatrix.umatrix_parser, jmatrix.interceptor
 from jmatrix.vendor.fpdomain import fpdomain
 
 from qutebrowser.api import interceptor, cmdutils, message, apitypes
@@ -64,14 +64,14 @@ def jmatrix_read_config() -> None:
 	JMATRIX_RULES = jmatrix.rule.Rules()
 	SEEN_REQUESTS = jmatrix.rule.Rules()
 	with open(JMATRIX_CONFIG, "r") as f:
-		jmatrix.ublock_parser.rules_to_map(f, JMATRIX_RULES)
+		jmatrix.umatrix_parser.rules_to_map(f, JMATRIX_RULES)
 	PSL = fpdomain.PSL(PSL_FILE)
 
 @cmdutils.register()
 def jmatrix_write_config() -> None:
 	"""Write out current rules."""
 	# This will strip out the "ignored" values in the default config.
-	text = jmatrix.ublock_parser.map_to_rules(JMATRIX_RULES)
+	text = jmatrix.umatrix_parser.map_to_rules(JMATRIX_RULES)
 	with open(JMATRIX_CONFIG, "w") as f:
 		f.write(jmatrix.rule.JMATRIX_HEADER + text)
 
