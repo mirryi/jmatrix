@@ -130,6 +130,9 @@ def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 		# Let them pass, since they aren't real requests and break things if we block them.
 		return
 	if info.first_party_url.isEmpty():
+		# This case occurs when downloading URLs. Ideally we would block these
+		# kinds of urls to block malformed requests, but in order to fix
+		# download, we'll whitelist this for now.
 		return
 	request_host = info.request_url.host()
 
