@@ -120,19 +120,21 @@ def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 		# If we are already blocked, don't waste our time here.
 		info.is_blocked):
 		return
-	context_host = info.first_party_url.host()
-	context_scheme = info.first_party_url.scheme()
+	first_party_url = info.first_party_url
+	if first_party_url.isEmpty():
+		# This case occurs when downloading URLs. Ideally we would hard-block
+		# these kinds of urls to block malformed requests, but in order to fix
+		# download, we'll pretend this is first-party for now.
+		first_party_url = info.request_url
+
+	context_host = first_party_url.host()
+	context_scheme = first_party_url.scheme()
 	request_scheme = info.request_url.scheme()
 	# TODO sometimes the context url as well is a data url. This seems like a bug. We can't handle this case very well
 	# though, as we will most likely end up blocking this case. If there's a way to work-around this, we should.
 	if request_scheme in {"blob", "data"} or context_scheme in {"blob", "data"}:
 		# These 'blob' urls don't seem to be actual requests, but internal chrome stuff
 		# Let them pass, since they aren't real requests and break things if we block them.
-		return
-	if info.first_party_url.isEmpty():
-		# This case occurs when downloading URLs. Ideally we would block these
-		# kinds of urls to block malformed requests, but in order to fix
-		# download, we'll whitelist this for now.
 		return
 	request_host = info.request_url.host()
 
