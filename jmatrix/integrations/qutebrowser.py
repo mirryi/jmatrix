@@ -113,13 +113,19 @@ QUTEBROWSER_JMATRIX_MAPPING = {
 	interceptor.ResourceType.sub_frame: jmatrix.rule.Type.FRAME,
 }
 
+QUTEBROWSER_JMATRIX_RESOURCE_WHITELIST = frozenset({
+	# Never blacklist main navigation (should this be changed?)
+	interceptor.ResourceType.main_frame,
+	# Never blacklist favicons (uMatrix configures this via images, but this
+	# causes favicons to break when tabs.favicons.show is set)
+	# http://www.gitlab.com/jgkamat/jmatrix/issues/2#note_204792112
+	interceptor.ResourceType.favicon})
+
 def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 	request_type = info.resource_type
-	# Never blacklist main navigation (should this be changed?)
-	if (request_type == interceptor.ResourceType.main_frame or
-		# If we are already blocked, don't waste our time here.
-		info.is_blocked):
-		return
+	# If we are already blocked or whitelisted, don't waste our time here.
+	if (info.is_blocked or
+		request_type in QUTEBROWSER_JMATRIX_RESOURCE_WHITELIST): return
 	first_party_url = info.first_party_url
 	if first_party_url.isEmpty():
 		# This case occurs when downloading URLs. Ideally we would hard-block
