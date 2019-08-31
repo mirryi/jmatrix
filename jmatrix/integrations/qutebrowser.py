@@ -37,6 +37,8 @@ MYPY = False
 if MYPY:
 	from qutebrowser.config import configcommands
 
+# If false, disable blocking. Usually changed via the jmatrix-toggle command
+JMATRIX_ENABLED = True
 
 # Used to actually decide if we should block a rule or not
 JMATRIX_RULES = jmatrix.rule.Rules()
@@ -124,7 +126,8 @@ QUTEBROWSER_JMATRIX_RESOURCE_WHITELIST = frozenset({
 def _jmatrix_intercept_request(info: interceptor.Request) -> None:
 	request_type = info.resource_type
 	# If we are already blocked or whitelisted, don't waste our time here.
-	if (info.is_blocked or
+	if (not JMATRIX_ENABLED or
+		info.is_blocked or
 		request_type in QUTEBROWSER_JMATRIX_RESOURCE_WHITELIST): return
 	first_party_url = info.first_party_url
 	if first_party_url.isEmpty():
@@ -200,3 +203,11 @@ def jmatrix_toggle_rule(tab: apitypes.Tab, rule: str):
 	# Change our seen requests to match so it'll show up in the completion
 	# without having to reload the page.
 	SEEN_REQUESTS.matrix_rules[origin][dest][res_type] = action
+
+@cmdutils.register()
+def jmatrix_toggle(quiet=False):
+	global JMATRIX_ENABLED
+	JMATRIX_ENABLED = not JMATRIX_ENABLED
+	enabled_str = "enabled" if JMATRIX_ENABLED else "disabled"
+	if not quiet:
+		message.info("jmatrix has been " + enabled_str)
