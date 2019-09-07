@@ -66,7 +66,8 @@ def jmatrix_read_config() -> None:
 	JMATRIX_RULES = jmatrix.rule.Rules()
 	SEEN_REQUESTS = jmatrix.rule.Rules()
 	with open(JMATRIX_CONFIG, "r") as f:
-		jmatrix.umatrix_parser.rules_to_map(f, JMATRIX_RULES)
+		errors = jmatrix.umatrix_parser.rules_to_map(f, JMATRIX_RULES, collate_errors=True)
+		tuple(map(message.error, map("!!!!!!!!! Error parsing umatrix rule: {} !!!!!!!".format, errors)))
 	PSL = fpdomain.PSL(PSL_FILE)
 
 @cmdutils.register()

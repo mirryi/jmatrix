@@ -65,3 +65,9 @@ def test_matrix_rule_serialize(r, result):
 	umatrix_parser.rules_to_map([r], rule_obj)
 	lines = umatrix_parser.map_to_rules(rule_obj)
 	assert lines == r
+
+def test_matrix_error():
+	rule_obj = rule.Rules()
+	with pytest.raises(umatrix_parser.JMatrixParserError):
+		umatrix_parser.rules_to_map(["foo.org foo.org * * * *"], rule_obj)
+	assert len(tuple(umatrix_parser.rules_to_map(["foo.org foo.org * * * *"], rule_obj, collate_errors=True))) > 0

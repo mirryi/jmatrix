@@ -58,8 +58,16 @@ RULE_TO_CONVERTER = {
 }
 
 
-def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules) -> None:
-	"""Convert uMatrix rules into jmatrix lists."""
+def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules, *,
+				 collate_errors: bool=False) -> typing.Iterable[JMatrixParserError]:
+	"""Convert uMatrix rules into jmatrix lists.
+	rule_lines: The string to parse into rules
+	rules: The rule object to update
+	collate_errors: Instead of throwing errors on a bad entry, eat the error
+and keep going. Then return all errors in a list. This option is dangerous if
+the return value is ignored!
+	"""
+	errors = []
 	for r in rule_lines:
 		# Remove comments
 		r = r.split('#', 1)[0].strip()
@@ -79,8 +87,14 @@ def rules_to_map(rule_lines: typing.Iterable[str], rules: rule.Rules) -> None:
 			# print("[jmatrix]: rule '{}' ignored!".format(directive))
 			pass
 		else:
-			RULE_TO_CONVERTER[directive](directive, line.strip(), rules)
-
+			try:
+				RULE_TO_CONVERTER[directive](directive, line.strip(), rules)
+			except JMatrixParserError as e:
+				if collate_errors:
+					errors.append(e)
+				else:
+					raise e
+	return errors
 
 def map_to_rules(rules: rule.Rules) -> str:
 	"""Convert jmatrix rules to uMatrix compatible text."""
