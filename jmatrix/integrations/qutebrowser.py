@@ -54,7 +54,7 @@ PSL_FILE = config.datadir / "psl"
 
 if not JMATRIX_CONFIG.exists():
 	# Create the file with the default config
-	with open(JMATRIX_CONFIG, "w") as f:
+	with open(JMATRIX_CONFIG, "w", encoding="utf-8") as f:
 		f.write(jmatrix.rule.JMATRIX_HEADER + jmatrix.rule.DEFAULT_RULES)
 
 @cmdutils.register()
@@ -65,7 +65,7 @@ def jmatrix_read_config() -> None:
 	global PSL
 	JMATRIX_RULES = jmatrix.rule.Rules()
 	SEEN_REQUESTS = jmatrix.rule.Rules()
-	with open(JMATRIX_CONFIG, "r") as f:
+	with open(JMATRIX_CONFIG, "r", encoding="utf-8") as f:
 		errors = jmatrix.umatrix_parser.rules_to_map(f, JMATRIX_RULES, collate_errors=True)
 		tuple(map(message.error, map("!!!!!!!!! Error parsing umatrix rule: {} !!!!!!!".format, errors)))
 	PSL = fpdomain.PSL(PSL_FILE)
@@ -75,7 +75,7 @@ def jmatrix_write_config() -> None:
 	"""Write out current rules."""
 	# This will strip out the "ignored" values in the default config.
 	text = jmatrix.umatrix_parser.map_to_rules(JMATRIX_RULES)
-	with open(JMATRIX_CONFIG, "w") as f:
+	with open(JMATRIX_CONFIG, "w", encoding="utf-8") as f:
 		f.write(jmatrix.rule.JMATRIX_HEADER + text)
 
 @cmdutils.register(instance='config-commands')
