@@ -1,22 +1,23 @@
 
 * jmatrix - j's matrix
 
-jmatrix is a WIP [[https://github.com/gorhill/uMatrix][uMatrix]] library/implementation for qutebrowser. It operates on
-uMatrix style config files, to make switching easier.
+jmatrix is a [[https://github.com/gorhill/uMatrix][uMatrix]] library written in python. It operates on uMatrix style
+config files, to make switching easier. It also has a qutebrowser integration.
 
 It tries to mirror uMatrix's behavior as close as possible. If you find a
 discrepancy that's not accounted for, please let me know.
 
-Here's a [[https://www.youtube.com/watch?v=UPxq8zkHXrg][small demo]].
+Here's a [[https://www.youtube.com/watch?v=UPxq8zkHXrg][small demo]], although it's rather outdated.
 
 * Usage
 
 If you are using jmatrix as an API, please see [[file:jmatrix/integrations/qutebrowser.py::def%20_jmatrix_intercept_request(info:%20interceptor.Request)%20->%20None:][the qutebrowser integration]] for
 an example on how to use everything.
 
-jmatrix reads from (or creates) a file at ~<config-dir>/jmatrix-rules~, which is
-~$HOME/.config/qutebrowser/jmatrix-rules~ on Linux. It accepts most of the [[https://github.com/gorhill/uMatrix/wiki/Rules-syntax][uMatrix
-rules syntax]].
+The qutebrowser integration reads from (or creates) a file at
+~<config-dir>/jmatrix-rules~, which is
+~$HOME/.config/qutebrowser/jmatrix-rules~ on Linux. It accepts most of the
+[[https://github.com/gorhill/uMatrix/wiki/Rules-syntax][uMatrix rules syntax]].
 
 After installing into qutebrowser, you will get a ~:jmatrix-read-config~ command
 to re-load the config on disk.
@@ -43,8 +44,8 @@ test_benchmark_null_match             14.4300 (1.58)     48.9900 (2.25)     14.8
 
 * Correctness
 
-I lifted the matching algorithm almost entirely from uMatrix (since it has a very
-weird hierarchy that was not easy to replicate without it).
+The matching algorithm is almost entirely lifted from uMatrix (since it has a
+very weird hierarchy that was not easy to replicate without it).
 
 If you find an issue, please report it!
 
