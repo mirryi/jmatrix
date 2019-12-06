@@ -141,8 +141,8 @@ class Rules():
 		#: Rules for which resources to block/allow.
 		#: Nested dicts that look like {origin: {dest: {Type: Action}}}
 		self.matrix_rules = (
-			collections.defaultdict(  # type: ignore
-				functools.partial(
+			collections.defaultdict(
+				functools.partial( # type: ignore
 					collections.defaultdict,
 					functools.partial(
 						collections.defaultdict,
