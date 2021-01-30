@@ -79,7 +79,7 @@ def jmatrix_write_config() -> None:
 		f.write(jmatrix.rule.JMATRIX_HEADER + text)
 
 @cmdutils.register(instance='config-commands')
-def jmatrix_edit_config(self: 'configcommands.ConfigCommands', no_source: bool = False) -> None:
+def jmatrix_edit_config(self, no_source: bool = False) -> None:
 	"""Open the jmatrix-rules file in the editor.
 
 	Args:
